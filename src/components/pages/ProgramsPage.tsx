@@ -50,7 +50,6 @@ export default function ProgramsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
       {/* Hero Section */}
       <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-black to-black/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -69,7 +68,6 @@ export default function ProgramsPage() {
           </motion.div>
         </div>
       </section>
-
       {/* Introduction */}
       <section className="w-full py-16 md:py-20 bg-background">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -78,13 +76,12 @@ export default function ProgramsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="font-paragraph text-lg md:text-xl text-foreground text-center max-w-5xl mx-auto leading-relaxed"
+            className="font-paragraph text-lg md:text-xl text-center max-w-5xl mx-auto leading-relaxed text-secondary"
           >
             Stemming from this purpose, RAYAC has identified seven (7) core Programs for the coming five-year period which will greatly benefit from collaboration with stakeholders through learning, solidarity, and resource support (technical and financial). These seven (7) Programs will be supported by the Institutional Capacity Building Program (ICBP), a Program which will enhance the capacity of RAYAC to implement the Programs effectively and efficiently at all levels of the 17th Episcopal district.
           </motion.p>
         </div>
       </section>
-
       {/* Programs List */}
       <section className="w-full pb-20 md:pb-32">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -118,14 +115,13 @@ export default function ProgramsPage() {
                           />
                         </div>
                       </div>
-
                       {/* Content */}
                       <div className={isEven ? '' : 'lg:col-start-1 lg:row-start-1'}>
                         <div className={`${iconColor} mb-6`}>
                           <IconComponent className="h-16 w-16" />
                         </div>
                         
-                        <h2 className="font-heading text-4xl md:text-5xl text-white mb-4">
+                        <h2 className="font-heading text-4xl md:text-5xl mb-4 text-secondary">
                           {program.programName}
                         </h2>
                         
@@ -136,13 +132,13 @@ export default function ProgramsPage() {
                         )}
 
                         {program.briefDescription && (
-                          <p className="font-paragraph text-lg text-white/90 mb-6 leading-relaxed">
+                          <p className="font-paragraph text-lg mb-6 leading-relaxed text-secondary">
                             {program.briefDescription}
                           </p>
                         )}
 
                         {program.detailedDescription && (
-                          <p className="font-paragraph text-base text-white/80 mb-6 leading-relaxed">
+                          <p className="font-paragraph text-base mb-6 leading-relaxed text-secondary">
                             {program.detailedDescription}
                           </p>
                         )}
@@ -152,7 +148,7 @@ export default function ProgramsPage() {
                             <h3 className="font-heading text-xl text-accent-red mb-3">
                               SDG Alignment
                             </h3>
-                            <p className="font-paragraph text-base text-white/80 leading-relaxed">
+                            <p className="font-paragraph text-base leading-relaxed text-secondary">
                               {program.sdgAlignment}
                             </p>
                           </div>
@@ -183,7 +179,6 @@ export default function ProgramsPage() {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );
