@@ -113,10 +113,10 @@ export default function HomePage() {
             className="absolute inset-0 z-0"
           >
             <Image
-              src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
-              alt="RAYAC Logo"
+              src="https://static.wixstatic.com/media/20287c_5d347ad2792745118870c6e8e6979d35~mv2.png?originWidth=1920&originHeight=1024"
+              alt="Young adults united in faith and purpose"
               className="w-full h-full object-cover"
-              width={1100}
+              width={1920}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 mix-blend-multiply" />
             <div className="absolute inset-0 bg-black/20" />
