@@ -219,12 +219,14 @@ export default function HomePage() {
                     Ministering to the <span className="text-secondary">Mind, Body, and Soul.</span>
                   </h2>
                   <div className="relative">
-                    <Image 
-                      src="https://static.wixstatic.com/media/20287c_7efae2277a6f4686b60f0ca9820af79d~mv2.png?originWidth=768&originHeight=384"
-                      alt="Community gathering"
+                    <Image
+                      src="https://static.wixstatic.com/media/20287c_468c07d6913e4bba889e89eec1544f9e~mv2.jpg"
                       className="w-full h-[400px] object-cover rounded-2xl shadow-2xl"
                       width={800}
-                    />
+                      originWidth={1280}
+                      originHeight={720}
+                      focalPointX={49.921875}
+                      focalPointY={21.805555555555557} />
                     <div className="absolute -bottom-10 -right-10 bg-accent-orange p-8 rounded-tl-3xl rounded-br-3xl shadow-xl hidden md:block">
                       <Heart className="w-12 h-12 text-white" />
                     </div>

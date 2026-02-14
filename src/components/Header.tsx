@@ -24,11 +24,11 @@ export default function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <Image
-              src="https://static.wixstatic.com/media/20287c_1d9ffdfbf3ce4e0d9581ad38eceb30e9~mv2.png?originWidth=128&originHeight=128"
-              alt="RAYAC Logo"
+              src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
               className="h-12 w-auto"
               width={48}
-            />
+              originWidth={368}
+              originHeight={356} />
             <div className="font-heading text-2xl md:text-3xl text-accent-red font-bold tracking-tight">
               RAYAC
             </div>
