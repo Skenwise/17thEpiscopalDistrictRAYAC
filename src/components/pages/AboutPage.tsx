@@ -81,10 +81,10 @@ This agency came from the vision of Dr. S. S. Morris, Sr., who committed to the 
 The primary goal of the RAYC was to coordinate and unify the total program which the local church offered its youth.
                 </p>
                 <p>
-                  We evolved into the Richard Allen Young Adults Council (RAYAC) to specifically focus on young adults aged 21-39, recognizing the unique potential and challenges of this demographic.
+                  Richard Allen Young Adult Council (RAYAC) was born at the 45th Quadrennial Session of the AME Church, and is an outgrowth of the Richard Allen Youth Council (RAYC). The RAYAC no longer serves as an overseeing body of other youth organizations, it is now a group for young adults between the ages of 21-45. The goal of the RAYAC is to retain young adults to the Lord, the church, and to lead young adults to use their gifts and talents in the service of the Lord.
                 </p>
                 <p>
-                  Our mission has always been clear: to empower young adults to use their gifts, talents, and resources in service of the Lord and their communities. We believe that young adults are not just the future of the church—they are vital leaders in the present.
+                  Our mission has always been clear: to empower young adults to use their gifts, talents, and resources in service of the Lord and their communities. We believe that young adults are not just the future of the church,they are vital leaders in the present.
                 </p>
                 <p>
                   Through decades of service, we have remained committed to our fourfold purpose of Discipleship, Leadership, Fellowship, and Networking, creating a movement that spans across the 17th Episcopal District.
