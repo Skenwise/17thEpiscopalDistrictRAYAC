@@ -32,7 +32,7 @@ const ScrollProgress = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1.5 bg-accent-orange origin-left z-50"
+      className="fixed top-0 left-0 right-0 h-1.5 bg-accent-red origin-left z-50"
       style={{ scaleX }}
     />
   );
@@ -131,8 +131,8 @@ export default function HomePage() {
       name: 'Advocacy for Peace & Justice',
       acronym: 'APJP',
       description: 'Promoting peace and inclusive societies.',
-      color: 'text-primary',
-      bgTheme: 'bg-primary/5'
+      color: 'text-accent-red',
+      bgTheme: 'bg-accent-red/5'
     },
     {
       icon: Leaf,
@@ -147,16 +147,16 @@ export default function HomePage() {
       name: 'Education for All',
       acronym: 'EA',
       description: 'Ensuring inclusive and quality education.',
-      color: 'text-primary',
-      bgTheme: 'bg-primary/5'
+      color: 'text-accent-red',
+      bgTheme: 'bg-accent-red/5'
     },
     {
       icon: Utensils,
       name: 'A Meal for All',
       acronym: 'AMA',
       description: 'Fighting hunger and food insecurity.',
-      color: 'text-accent-orange',
-      bgTheme: 'bg-accent-orange/5'
+      color: 'text-accent-red',
+      bgTheme: 'bg-accent-red/5'
     },
     {
       icon: Users,
@@ -171,16 +171,16 @@ export default function HomePage() {
       name: 'Mind Matters Initiative',
       acronym: 'MMI',
       description: 'Supporting mental health and well-being.',
-      color: 'text-primary',
-      bgTheme: 'bg-primary/5'
+      color: 'text-accent-red',
+      bgTheme: 'bg-accent-red/5'
     },
     {
       icon: Church,
       name: 'Temple Restoration & Stewardship',
       acronym: 'TRSI',
       description: 'Revitalizing churches and supporting pastors.',
-      color: 'text-accent-orange',
-      bgTheme: 'bg-accent-orange/5'
+      color: 'text-accent-red',
+      bgTheme: 'bg-accent-red/5'
     }
   ];
 
@@ -197,7 +197,7 @@ export default function HomePage() {
 
       <main>
         {/* --- HERO SECTION --- */}
-        <section ref={heroRef} className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden">
+        <section ref={heroRef} className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black">
           {/* Parallax Background */}
           <motion.div 
             style={{ y: heroY, opacity: heroOpacity }}
@@ -209,7 +209,7 @@ export default function HomePage() {
               className="w-full h-full object-cover scale-105"
               width={1920}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary/90 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 mix-blend-multiply" />
             <div className="absolute inset-0 bg-black/20" />
           </motion.div>
 
@@ -222,8 +222,8 @@ export default function HomePage() {
                 transition={{ duration: 1, delay: 0.2 }}
                 className="flex items-center gap-4 mb-6"
               >
-                <div className="h-[1px] w-12 bg-accent-orange" />
-                <span className="text-accent-orange font-bold tracking-widest uppercase text-sm">Est. 1937</span>
+                <div className="h-[1px] w-12 bg-accent-red" />
+                <span className="text-accent-red font-bold tracking-widest uppercase text-sm">Est. 1937</span>
               </motion.div>
 
               <motion.h1
@@ -233,14 +233,14 @@ export default function HomePage() {
                 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[1.1] mb-8 drop-shadow-lg font-light"
               >
                 A New Generation <br />
-                <span className="text-accent-orange italic font-normal">of Believers.</span>
+                <span className="text-accent-red italic font-normal">of Believers.</span>
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="font-paragraph text-lg md:text-xl text-white/90 mb-12 max-w-3xl leading-relaxed border-l-4 border-secondary pl-6 italic"
+                className="font-paragraph text-lg md:text-xl text-white/90 mb-12 max-w-3xl leading-relaxed border-l-4 border-accent-red pl-6 italic"
               >
                 "God has called a new generation of believers to make God known. God is calling for young men and women to serve as God's ambassadors and ministers of reconciliation in the midst of life's transition. Now is the time to take our place in the struggle. Now is the time to serve the present age our callings to fulfill."
               </motion.p>
@@ -254,7 +254,7 @@ export default function HomePage() {
                 <Link to="/programs">
                   <Button
                     size="lg"
-                    className="bg-accent-orange hover:bg-accent-orange/90 text-white font-bold text-lg px-10 py-7 rounded-full transition-all duration-300 shadow-lg hover:shadow-accent-orange/30 hover:-translate-y-1"
+                    className="bg-accent-red hover:bg-accent-red/90 text-white font-bold text-lg px-10 py-7 rounded-full transition-all duration-300 shadow-lg hover:shadow-accent-red/30 hover:-translate-y-1"
                   >
                     Explore Our Work
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -264,7 +264,7 @@ export default function HomePage() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary font-bold text-lg px-10 py-7 rounded-full transition-all duration-300 backdrop-blur-sm"
+                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-bold text-lg px-10 py-7 rounded-full transition-all duration-300 backdrop-blur-sm"
                   >
                     Our Story
                   </Button>
@@ -353,7 +353,7 @@ export default function HomePage() {
         </section>
 
         {/* --- IMPACT NUMBERS (Sticky & Dynamic) --- */}
-        <section className="relative w-full bg-primary text-white py-32 overflow-hidden">
+        <section className="relative w-full bg-black text-white py-32 overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay" />
           
           <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24 relative z-10">
@@ -367,7 +367,7 @@ export default function HomePage() {
                       Measuring our progress towards a more just and sustainable future across the 17th Episcopal District.
                     </p>
                     <Link to="/programs">
-                      <Button variant="link" className="text-accent-orange p-0 text-lg hover:text-white transition-colors">
+                      <Button variant="link" className="text-accent-red p-0 text-lg hover:text-white transition-colors">
                         View Strategic Plan <ArrowRight className="ml-2 w-5 h-5" />
                       </Button>
                     </Link>
@@ -388,15 +388,15 @@ export default function HomePage() {
                     {statistics.length > 0 ? (
                       statistics.map((stat, index) => (
                         <StaggerItem key={stat._id} className="group">
-                          <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all duration-500 h-full flex flex-col justify-between hover:transform hover:-translate-y-2">
+                          <div className="bg-white/5 backdrop-blur-sm border border-accent-red/30 p-8 rounded-2xl hover:bg-white/10 transition-all duration-500 h-full flex flex-col justify-between hover:transform hover:-translate-y-2">
                             <div>
-                              <div className="text-6xl md:text-7xl font-heading font-bold text-secondary mb-2">
+                              <div className="text-6xl md:text-7xl font-heading font-bold text-accent-red mb-2">
                                 {stat.statisticValue}
-                                <span className="text-4xl text-accent-orange ml-1">{stat.statisticUnit}</span>
+                                <span className="text-4xl text-accent-silver ml-1">{stat.statisticUnit}</span>
                               </div>
                               <h3 className="text-xl font-bold mb-3">{stat.statisticLabel}</h3>
                             </div>
-                            <p className="text-white/60 text-sm border-t border-white/10 pt-4 mt-4">
+                            <p className="text-white/60 text-sm border-t border-accent-red/30 pt-4 mt-4">
                               {stat.statisticDescription || "Driving change in our communities."}
                             </p>
                           </div>
@@ -487,7 +487,7 @@ export default function HomePage() {
         </section>
 
         {/* --- CALL TO ACTION (Parallax & Full Bleed) --- */}
-        <section className="relative w-full min-h-[80vh] flex items-center justify-center overflow-hidden">
+        <section className="relative w-full min-h-[80vh] flex items-center justify-center overflow-hidden bg-black">
           <div className="absolute inset-0 z-0">
             <Image
               src="https://static.wixstatic.com/media/20287c_af7dbad5068f423da76b5e2b3245857e~mv2.png?originWidth=1920&originHeight=1024"
@@ -495,7 +495,7 @@ export default function HomePage() {
               className="w-full h-full object-cover"
               width={1920}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
           </div>
 
           <div className="relative z-10 max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24 text-center">
@@ -506,12 +506,12 @@ export default function HomePage() {
               
               <h2 className="font-heading text-5xl md:text-7xl text-white mb-8 leading-tight">
                 Guided by Our <br/>
-                <span className="text-accent-orange">Fourfold Purpose</span>
+                <span className="text-accent-red">Fourfold Purpose</span>
               </h2>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-16 max-w-5xl mx-auto">
                 {['Discipleship', 'Leadership', 'Fellowship', 'Networking'].map((item, i) => (
-                  <div key={item} className="text-white/90 font-heading text-xl md:text-2xl border-t border-white/30 pt-4">
+                  <div key={item} className="text-white/90 font-heading text-xl md:text-2xl border-t border-accent-red/50 pt-4">
                     {item}
                   </div>
                 ))}
@@ -521,7 +521,7 @@ export default function HomePage() {
                 <Link to="/get-involved">
                   <Button
                     size="lg"
-                    className="bg-secondary hover:bg-secondary/90 text-white font-bold text-xl px-12 py-8 rounded-full transition-all duration-300 shadow-xl hover:shadow-secondary/40 hover:-translate-y-1"
+                    className="bg-accent-red hover:bg-accent-red/90 text-white font-bold text-xl px-12 py-8 rounded-full transition-all duration-300 shadow-xl hover:shadow-accent-red/40 hover:-translate-y-1"
                   >
                     Join Us Today
                   </Button>
@@ -530,7 +530,7 @@ export default function HomePage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="bg-white/10 backdrop-blur-md border-2 border-white text-white hover:bg-white hover:text-primary font-bold text-xl px-12 py-8 rounded-full transition-all duration-300"
+                    className="bg-white/10 backdrop-blur-md border-2 border-white text-white hover:bg-white hover:text-black font-bold text-xl px-12 py-8 rounded-full transition-all duration-300"
                   >
                     Partner With Us
                   </Button>

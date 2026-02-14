@@ -38,13 +38,13 @@ export default function ProgramsPage() {
   };
 
   const colorMap: Record<string, string> = {
-    APJP: 'text-primary',
+    APJP: 'text-accent-red',
     LGG: 'text-secondary',
-    EA: 'text-primary',
-    AMA: 'text-accent-orange',
+    EA: 'text-accent-red',
+    AMA: 'text-accent-red',
     GEA: 'text-secondary',
-    MMI: 'text-primary',
-    TRSI: 'text-accent-orange'
+    MMI: 'text-accent-red',
+    TRSI: 'text-accent-red'
   };
 
   return (
@@ -52,7 +52,7 @@ export default function ProgramsPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-primary to-primary/80">
+      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-black to-black/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -125,45 +125,45 @@ export default function ProgramsPage() {
                           <IconComponent className="h-16 w-16" />
                         </div>
                         
-                        <h2 className="font-heading text-4xl md:text-5xl text-primary mb-4">
+                        <h2 className="font-heading text-4xl md:text-5xl text-white mb-4">
                           {program.programName}
                         </h2>
                         
                         {program.acronym && (
-                          <p className="font-paragraph text-lg text-accent-orange font-semibold mb-6">
+                          <p className="font-paragraph text-lg text-accent-red font-semibold mb-6">
                             {program.acronym}
                           </p>
                         )}
 
                         {program.briefDescription && (
-                          <p className="font-paragraph text-lg text-foreground mb-6 leading-relaxed">
+                          <p className="font-paragraph text-lg text-white/90 mb-6 leading-relaxed">
                             {program.briefDescription}
                           </p>
                         )}
 
                         {program.detailedDescription && (
-                          <p className="font-paragraph text-base text-foreground/90 mb-6 leading-relaxed">
+                          <p className="font-paragraph text-base text-white/80 mb-6 leading-relaxed">
                             {program.detailedDescription}
                           </p>
                         )}
 
                         {program.sdgAlignment && (
                           <div className="mb-6">
-                            <h3 className="font-heading text-xl text-primary mb-3">
+                            <h3 className="font-heading text-xl text-accent-red mb-3">
                               SDG Alignment
                             </h3>
-                            <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
+                            <p className="font-paragraph text-base text-white/80 leading-relaxed">
                               {program.sdgAlignment}
                             </p>
                           </div>
                         )}
 
                         {program.keyActivities && (
-                          <div className="bg-gray-50 p-6 rounded-xl">
-                            <h3 className="font-heading text-xl text-primary mb-4">
+                          <div className="bg-black/40 border border-accent-red/30 p-6 rounded-xl">
+                            <h3 className="font-heading text-xl text-accent-red mb-4">
                               Key Activities
                             </h3>
-                            <div className="font-paragraph text-base text-foreground/90 leading-relaxed whitespace-pre-line">
+                            <div className="font-paragraph text-base text-white/80 leading-relaxed whitespace-pre-line">
                               {program.keyActivities}
                             </div>
                           </div>

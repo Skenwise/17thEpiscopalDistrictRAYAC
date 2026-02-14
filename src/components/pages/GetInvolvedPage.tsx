@@ -53,7 +53,7 @@ export default function GetInvolvedPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-accent-orange to-accent-orange/80">
+      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-accent-red to-accent-red/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -81,10 +81,10 @@ export default function GetInvolvedPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="bg-primary/10 p-4 rounded-lg w-fit mb-6">
-                <UserPlus className="h-10 w-10 text-primary" />
+              <div className="bg-accent-red/10 p-4 rounded-lg w-fit mb-6">
+                <UserPlus className="h-10 w-10 text-accent-red" />
               </div>
-              <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+              <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
                 For Young Adults
               </h2>
               <p className="font-paragraph text-lg text-foreground mb-8 leading-relaxed">
@@ -136,7 +136,7 @@ export default function GetInvolvedPage() {
       </section>
 
       {/* For Partners & Donors */}
-      <section className="w-full py-20 md:py-32 bg-gray-50">
+      <section className="w-full py-20 md:py-32 bg-black">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -166,10 +166,10 @@ export default function GetInvolvedPage() {
               <div className="bg-secondary/10 p-4 rounded-lg w-fit mb-6">
                 <HandHeart className="h-10 w-10 text-secondary" />
               </div>
-              <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+              <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
                 For Partners & Donors
               </h2>
-              <p className="font-paragraph text-lg text-foreground mb-8 leading-relaxed">
+              <p className="font-paragraph text-lg text-white/90 mb-8 leading-relaxed">
                 Support our seven core programs. Your partnership helps us implement life-changing initiatives in education, health, and environmental protection across Africa.
               </p>
               
@@ -183,17 +183,17 @@ export default function GetInvolvedPage() {
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <div className="bg-accent-orange/20 rounded-full p-1 mt-1 flex-shrink-0">
-                      <div className="w-2 h-2 bg-accent-orange rounded-full" />
+                    <div className="bg-accent-red/20 rounded-full p-1 mt-1 flex-shrink-0">
+                      <div className="w-2 h-2 bg-accent-red rounded-full" />
                     </div>
-                    <p className="font-paragraph text-base text-foreground/90">
+                    <p className="font-paragraph text-base text-white/80">
                       {benefit}
                     </p>
                   </motion.div>
                 ))}
               </div>
 
-              <p className="font-paragraph text-base text-foreground/80 italic">
+              <p className="font-paragraph text-base text-white/70 italic">
                 "Together, we can create lasting change in communities across the 17th Episcopal District."
               </p>
             </motion.div>
@@ -202,7 +202,7 @@ export default function GetInvolvedPage() {
       </section>
 
       {/* Contact Form */}
-      <section className="w-full py-20 md:py-32 bg-background">
+      <section className="w-full py-20 md:py-32 bg-white">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -211,7 +211,7 @@ export default function GetInvolvedPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+            <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Get in Touch
             </h2>
             <p className="font-paragraph text-lg md:text-xl text-foreground max-w-3xl mx-auto">
@@ -227,9 +227,9 @@ export default function GetInvolvedPage() {
             className="max-w-3xl mx-auto"
           >
             {isSubmitted ? (
-              <div className="bg-secondary/10 border border-secondary/30 rounded-xl p-8 text-center">
-                <CheckCircle className="h-16 w-16 text-secondary mx-auto mb-4" />
-                <h3 className="font-heading text-2xl text-primary mb-3">
+              <div className="bg-accent-red/10 border border-accent-red/30 rounded-xl p-8 text-center">
+                <CheckCircle className="h-16 w-16 text-accent-red mx-auto mb-4" />
+                <h3 className="font-heading text-2xl text-accent-red mb-3">
                   Thank You!
                 </h3>
                 <p className="font-paragraph text-base text-foreground/90">
@@ -237,7 +237,7 @@ export default function GetInvolvedPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-2xl border border-gray-200">
+              <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-2xl border border-accent-red/20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <Label htmlFor="name" className="font-paragraph text-base text-foreground mb-2 flex items-center gap-2">
@@ -327,7 +327,7 @@ export default function GetInvolvedPage() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-accent-orange hover:bg-accent-orange/90 text-white font-paragraph font-semibold text-lg py-6 rounded-lg transition-all duration-300"
+                  className="w-full bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold text-lg py-6 rounded-lg transition-all duration-300"
                 >
                   Submit
                 </Button>

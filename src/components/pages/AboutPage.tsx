@@ -39,7 +39,7 @@ export default function AboutPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-primary to-primary/80">
+      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-black to-black/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -67,10 +67,10 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="font-heading text-4xl md:text-5xl text-primary mb-8">
+              <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-8">
                 Our History
               </h2>
-              <div className="space-y-6 font-paragraph text-lg text-foreground leading-relaxed">
+              <div className="space-y-6 font-paragraph text-lg text-white/90 leading-relaxed">
                 <p>
                   Founded in 1937 as the RAYC (Richard Allen Young Council), our organization has a rich heritage of empowering young people within the African Methodist Episcopal Church.
                 </p>
@@ -107,7 +107,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Structure */}
-      <section className="w-full py-20 md:py-32 bg-gray-50">
+      <section className="w-full py-20 md:py-32 bg-black">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -116,10 +116,10 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+            <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Our Structure
             </h2>
-            <p className="font-paragraph text-lg md:text-xl text-foreground max-w-4xl mx-auto leading-relaxed">
+            <p className="font-paragraph text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed">
               RAYAC operates across the 17th Episcopal District of the African Methodist Episcopal Church, spanning multiple countries and conferences throughout Africa.
             </p>
           </motion.div>
@@ -132,13 +132,13 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
-                className="bg-white p-6 rounded-xl border border-gray-200"
+                className="bg-black/40 border border-accent-red/30 p-6 rounded-xl"
               >
                 <div className="flex items-center gap-3">
-                  <div className="bg-primary/10 p-3 rounded-lg">
-                    <Users className="h-6 w-6 text-primary" />
+                  <div className="bg-accent-red/10 p-3 rounded-lg">
+                    <Users className="h-6 w-6 text-accent-red" />
                   </div>
-                  <p className="font-paragraph text-base text-foreground font-medium">
+                  <p className="font-paragraph text-base text-white/90 font-medium">
                     {conference}
                   </p>
                 </div>
@@ -149,7 +149,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Leadership */}
-      <section className="w-full py-20 md:py-32 bg-background">
+      <section className="w-full py-20 md:py-32 bg-white">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -158,7 +158,7 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+            <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Our Leadership
             </h2>
             <p className="font-paragraph text-lg md:text-xl text-foreground max-w-4xl mx-auto leading-relaxed">
@@ -172,12 +172,12 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white p-8 rounded-xl border border-gray-200"
+              className="bg-black/5 border border-accent-red/30 p-8 rounded-xl"
             >
-              <div className="bg-primary/10 p-4 rounded-lg w-fit mb-6">
-                <Shield className="h-8 w-8 text-primary" />
+              <div className="bg-accent-red/10 p-4 rounded-lg w-fit mb-6">
+                <Shield className="h-8 w-8 text-accent-red" />
               </div>
-              <h3 className="font-heading text-2xl text-primary mb-4">
+              <h3 className="font-heading text-2xl text-accent-red mb-4">
                 Episcopal Executive Board
               </h3>
               <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
@@ -190,12 +190,12 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white p-8 rounded-xl border border-gray-200"
+              className="bg-black/5 border border-accent-red/30 p-8 rounded-xl"
             >
               <div className="bg-secondary/10 p-4 rounded-lg w-fit mb-6">
                 <Target className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="font-heading text-2xl text-primary mb-4">
+              <h3 className="font-heading text-2xl text-accent-red mb-4">
                 Management Team
               </h3>
               <p className="font-paragraph text-base text-foreground/90 leading-relaxed mb-4">
@@ -212,7 +212,7 @@ export default function AboutPage() {
       </section>
 
       {/* Strategic Approach */}
-      <section className="w-full py-20 md:py-32 bg-gradient-to-br from-primary/5 to-secondary/5">
+      <section className="w-full py-20 md:py-32 bg-gradient-to-br from-black/5 to-accent-red/5">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -221,7 +221,7 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-heading text-4xl md:text-5xl text-primary mb-6">
+            <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Our Strategic Approach
             </h2>
             <p className="font-paragraph text-lg md:text-xl text-foreground max-w-4xl mx-auto leading-relaxed">
@@ -236,21 +236,21 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white p-8 rounded-xl"
+              className="bg-white p-8 rounded-xl border border-accent-red/20"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="bg-secondary/10 p-3 rounded-lg">
-                  <TrendingUp className="h-8 w-8 text-secondary" />
+                <div className="bg-accent-red/10 p-3 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-accent-red" />
                 </div>
-                <h3 className="font-heading text-2xl text-primary">
+                <h3 className="font-heading text-2xl text-accent-red">
                   Our Strengths
                 </h3>
               </div>
               <ul className="space-y-4">
                 {strengths.map((strength, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <div className="bg-secondary/20 rounded-full p-1 mt-1 flex-shrink-0">
-                      <div className="w-2 h-2 bg-secondary rounded-full" />
+                    <div className="bg-accent-red/20 rounded-full p-1 mt-1 flex-shrink-0">
+                      <div className="w-2 h-2 bg-accent-red rounded-full" />
                     </div>
                     <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
                       {strength}
@@ -266,21 +266,21 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white p-8 rounded-xl"
+              className="bg-white p-8 rounded-xl border border-accent-red/20"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="bg-accent-orange/10 p-3 rounded-lg">
-                  <Target className="h-8 w-8 text-accent-orange" />
+                <div className="bg-accent-red/10 p-3 rounded-lg">
+                  <Target className="h-8 w-8 text-accent-red" />
                 </div>
-                <h3 className="font-heading text-2xl text-primary">
+                <h3 className="font-heading text-2xl text-accent-red">
                   Our Opportunities
                 </h3>
               </div>
               <ul className="space-y-4">
                 {opportunities.map((opportunity, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <div className="bg-accent-orange/20 rounded-full p-1 mt-1 flex-shrink-0">
-                      <div className="w-2 h-2 bg-accent-orange rounded-full" />
+                    <div className="bg-accent-red/20 rounded-full p-1 mt-1 flex-shrink-0">
+                      <div className="w-2 h-2 bg-accent-red rounded-full" />
                     </div>
                     <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
                       {opportunity}
