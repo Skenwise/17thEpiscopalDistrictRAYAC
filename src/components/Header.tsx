@@ -22,15 +22,20 @@ export default function Header() {
       <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 md:gap-3">
             <Image
               src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
-              className="h-12 w-auto"
+              className="h-10 md:h-12 w-auto"
               width={48}
               originWidth={368}
               originHeight={356} />
-            <div className="text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground font-paragraph">
-              17th Episcopal District
+            <div className="flex flex-col gap-0.5">
+              <div className="text-xs md:text-sm font-semibold tracking-widest text-accent-red uppercase">
+                17th Episcopal
+              </div>
+              <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading">
+                District
+              </div>
             </div>
           </Link>
 
