@@ -113,8 +113,8 @@ export default function HomePage() {
             className="absolute inset-0 z-0"
           >
             <Image
-              src="https://static.wixstatic.com/media/20287c_11f8cf62c82a4a6997c11a2ea3988758~mv2.png?originWidth=1920&originHeight=1024"
-              alt="Young adults working together in community action"
+              src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
+              alt="RAYAC Logo"
               className="w-full h-full object-cover scale-105"
               width={1920}
             />
