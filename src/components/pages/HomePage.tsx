@@ -4,20 +4,12 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Leaf, Scale, GraduationCap, Utensils, Users, Brain, Church, ChevronRight, Heart } from 'lucide-react';
+import { ArrowRight, Church, ChevronRight, Heart } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 // ... keep existing code (imports) ...
 
 // --- Types ---
-interface Program {
-  icon: React.ElementType;
-  name: string;
-  acronym: string;
-  description: string;
-  color: string;
-  bgTheme: string;
-}
 
 // --- Components ---
 
@@ -102,67 +94,7 @@ const StaggerItem = ({ children, className = "" }: { children: React.ReactNode; 
 };
 
 export default function HomePage() {
-  // --- Programs Data ---
-  const programs: Program[] = [
-    {
-      icon: Scale,
-      name: 'Advocacy for Peace & Justice',
-      acronym: 'APJP',
-      description: 'Promoting peace and inclusive societies.',
-      color: 'text-accent-red',
-      bgTheme: 'bg-accent-red/5'
-    },
-    {
-      icon: Leaf,
-      name: "Let's Go Green",
-      acronym: 'LGG',
-      description: 'Combating climate change through action.',
-      color: 'text-secondary',
-      bgTheme: 'bg-secondary/5'
-    },
-    {
-      icon: GraduationCap,
-      name: 'Education for All',
-      acronym: 'EA',
-      description: 'Ensuring inclusive and quality education.',
-      color: 'text-accent-red',
-      bgTheme: 'bg-accent-red/5'
-    },
-    {
-      icon: Utensils,
-      name: 'A Meal for All',
-      acronym: 'AMA',
-      description: 'Fighting hunger and food insecurity.',
-      color: 'text-accent-red',
-      bgTheme: 'bg-accent-red/5'
-    },
-    {
-      icon: Users,
-      name: 'Gender Equality for All',
-      acronym: 'GEA',
-      description: 'Empowering all genders to thrive.',
-      color: 'text-secondary',
-      bgTheme: 'bg-secondary/5'
-    },
-    {
-      icon: Brain,
-      name: 'Mind Matters Initiative',
-      acronym: 'MMI',
-      description: 'Supporting mental health and well-being.',
-      color: 'text-accent-red',
-      bgTheme: 'bg-accent-red/5'
-    },
-    {
-      icon: Church,
-      name: 'Temple Restoration & Stewardship',
-      acronym: 'TRSI',
-      description: 'Revitalizing churches and supporting pastors.',
-      color: 'text-accent-red',
-      bgTheme: 'bg-accent-red/5'
-    }
-  ];
-
-  // --- Animation Hooks ---
+  // ... keep existing code (animation hooks and state) ...
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 1000], [0, 400]);
@@ -329,77 +261,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* --- CORE PROGRAMS (Horizontal Flow / Grid) --- */}
-        <section className="w-full py-32 md:py-48 bg-gray-50">
-          <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24">
-            <FadeInUp className="text-center max-w-4xl mx-auto mb-24">
-              <span className="text-secondary font-bold tracking-widest uppercase text-sm mb-4 block">Our Initiatives</span>
-              <h2 className="font-heading text-4xl md:text-6xl text-primary mb-6">
-                Seven Core Programs
-              </h2>
-              <p className="font-paragraph text-xl text-secondary">
-                Transformative initiatives designed to respond to the most pressing issues in our communities.
-              </p>
-            </FadeInUp>
 
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {programs.map((program, index) => {
-                const IconComponent = program.icon;
-                // Make the last item span full width on large screens if odd number
-                const isLast = index === programs.length - 1;
-                
-                return (
-                  <StaggerItem 
-                    key={program.acronym} 
-                    className={`h-full ${isLast ? 'lg:col-span-3 lg:w-1/2 lg:mx-auto' : ''}`}
-                  >
-                    <Link to="/programs" className="block h-full group">
-                      <div className="bg-white p-10 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-500 h-full border border-transparent hover:border-gray-100 relative overflow-hidden">
-                        {/* Hover Gradient Background */}
-                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white via-white to-${program.color.replace('text-', '')}/10`} />
-                        
-                        <div className="relative z-10">
-                          <div className={`w-16 h-16 rounded-2xl ${program.bgTheme} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
-                            <IconComponent className={`h-8 w-8 ${program.color}`} />
-                          </div>
-                          
-                          <div className="flex justify-between items-start mb-4">
-                            <h3 className="font-heading text-2xl text-primary group-hover:text-secondary transition-colors duration-300">
-                              {program.name}
-                            </h3>
-                            <span className="font-bold text-xs bg-gray-100 px-3 py-1 rounded-full text-gray-500 group-hover:bg-secondary group-hover:text-white transition-colors">
-                              {program.acronym}
-                            </span>
-                          </div>
-                          
-                          <p className="font-paragraph mb-8 leading-relaxed text-secondary">
-                            {program.description}
-                          </p>
-                          
-                          <div className="flex items-center text-sm font-bold text-primary group-hover:translate-x-2 transition-transform duration-300">
-                            Learn More <ArrowRight className="ml-2 w-4 h-4" />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </StaggerItem>
-                );
-              })}
-            </StaggerContainer>
-
-            <div className="mt-20 text-center">
-              <Link to="/programs">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold text-lg px-12 py-6 rounded-full transition-all duration-300"
-                >
-                  View All Projects
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
 
         {/* --- CALL TO ACTION (Parallax & Full Bleed) --- */}
         <section className="relative w-full min-h-[80vh] flex items-center justify-center overflow-hidden bg-black">
