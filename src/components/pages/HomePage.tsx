@@ -240,9 +240,9 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="font-paragraph text-xl md:text-2xl text-white/90 mb-12 max-w-2xl leading-relaxed border-l-4 border-secondary pl-6"
+                className="font-paragraph text-lg md:text-xl text-white/90 mb-12 max-w-3xl leading-relaxed border-l-4 border-secondary pl-6 italic"
               >
-                Building a Just and Sustainable Future through faith, action, and community leadership.
+                "God has called a new generation of believers to make God known. God is calling for young men and women to serve as God's ambassadors and ministers of reconciliation in the midst of life's transition. Now is the time to take our place in the struggle. Now is the time to serve the present age our callings to fulfill."
               </motion.p>
 
               <motion.div
@@ -325,17 +325,25 @@ export default function HomePage() {
 
               <div className="lg:col-span-7">
                 <FadeInUp delay={0.2}>
-                  <p className="font-paragraph text-2xl md:text-3xl lg:text-4xl text-foreground/80 leading-relaxed font-light">
-                    "We are committed to developing young adult leaders who serve as <span className="text-primary font-semibold">ambassadors of reconciliation</span> and advocates for peace, justice, and environmental stewardship."
+                  <p className="font-paragraph text-xl md:text-2xl lg:text-3xl text-foreground/80 leading-relaxed font-light mb-8">
+                    Ministering to the intellectual (mind), physical (body) and spiritual (soul) needs of the members of the body of Christ.
                   </p>
                   <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="border-l-2 border-gray-200 pl-6">
-                      <h3 className="font-heading text-xl text-primary mb-2">Faith Rooted</h3>
-                      <p className="text-foreground/70">Grounded in the teachings of the AME Church and the legacy of Richard Allen.</p>
+                      <h3 className="font-heading text-xl text-primary mb-2">Discipleship</h3>
+                      <p className="text-foreground/70">Bringing young adults into a covenant relationship with Jesus Christ, teaching them how to live Christ-centred lives, and serve as Christian mentors to youths.</p>
                     </div>
                     <div className="border-l-2 border-gray-200 pl-6">
-                      <h3 className="font-heading text-xl text-primary mb-2">Action Oriented</h3>
-                      <p className="text-foreground/70">Moving beyond words to tangible impact in our communities across Africa.</p>
+                      <h3 className="font-heading text-xl text-primary mb-2">Leadership Training</h3>
+                      <p className="text-foreground/70">Develop young adults into Christian leaders within the AME church and community at large to effectively represent and voice the concerns of a new generation.</p>
+                    </div>
+                    <div className="border-l-2 border-gray-200 pl-6">
+                      <h3 className="font-heading text-xl text-primary mb-2">Fellowship</h3>
+                      <p className="text-foreground/70">Create and provide opportunities for Christian fellowship among young adults.</p>
+                    </div>
+                    <div className="border-l-2 border-gray-200 pl-6">
+                      <h3 className="font-heading text-xl text-primary mb-2">Networking</h3>
+                      <p className="text-foreground/70">Provide resources for young adult ministries within the AME church and the community at large and provide opportunities for young adults to use their God-given gifts and talents for Kingdom building.</p>
                     </div>
                   </div>
                 </FadeInUp>
