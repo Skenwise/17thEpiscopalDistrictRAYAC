@@ -30,7 +30,7 @@ export default function Header() {
               originWidth={368}
               originHeight={356} />
             <div className="font-heading text-2xl md:text-3xl text-accent-red font-bold tracking-tight">
-              RAYAC
+              17th Episcopal District
             </div>
           </Link>
 
