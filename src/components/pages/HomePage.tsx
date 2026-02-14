@@ -115,7 +115,7 @@ export default function HomePage() {
             <Image
               src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
               alt="RAYAC Logo"
-              className="w-full h-full object-cover scale-105"
+              className="w-full h-full object-cover"
               width={1920}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 mix-blend-multiply" />
