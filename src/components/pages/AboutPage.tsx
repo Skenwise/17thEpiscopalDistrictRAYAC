@@ -37,7 +37,6 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
       {/* Hero Section */}
       <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-black to-black/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -56,7 +55,6 @@ export default function AboutPage() {
           </motion.div>
         </div>
       </section>
-
       {/* Our History */}
       <section className="w-full py-20 md:py-32 bg-background">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -101,17 +99,18 @@ The primary goal of the RAYC was to coordinate and unify the total program which
             >
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
                 <Image
-                  src="https://static.wixstatic.com/media/20287c_243af0ea25ef401196627467755e708a~mv2.png?originWidth=768&originHeight=576"
-                  alt="RAYAC history and heritage"
-                  className="w-full h-full object-cover"
+                  src="https://static.wixstatic.com/media/20287c_3119a5b773454566aa7a2fac7a16d92a~mv2.jpg"
+                  className="w-full h-full object-cover my-6 mx-0 mt-6 mr-0 mb-[25px] ml-0"
                   width={800}
-                />
+                  originWidth={1920}
+                  originHeight={2560}
+                  focalPointX={68.95833333333333}
+                  focalPointY={61.171875} />
               </div>
             </motion.div>
           </div>
         </div>
       </section>
-
       {/* Our Structure */}
       <section className="w-full py-20 md:py-32 bg-black">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -153,7 +152,6 @@ The primary goal of the RAYC was to coordinate and unify the total program which
           </div>
         </div>
       </section>
-
       {/* Our Leadership */}
       <section className="w-full py-20 md:py-32 bg-white">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -216,7 +214,6 @@ The primary goal of the RAYC was to coordinate and unify the total program which
           </div>
         </div>
       </section>
-
       {/* Strategic Approach */}
       <section className="w-full py-20 md:py-32 bg-gradient-to-br from-black/5 to-accent-red/5">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -298,7 +295,6 @@ The primary goal of the RAYC was to coordinate and unify the total program which
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );

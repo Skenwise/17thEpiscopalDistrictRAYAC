@@ -51,7 +51,6 @@ export default function GetInvolvedPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
       {/* Hero Section */}
       <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-accent-red to-accent-red/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -70,7 +69,6 @@ export default function GetInvolvedPage() {
           </motion.div>
         </div>
       </section>
-
       {/* For Young Adults */}
       <section className="w-full py-20 md:py-32 bg-background">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -124,17 +122,18 @@ export default function GetInvolvedPage() {
             >
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
                 <Image
-                  src="https://static.wixstatic.com/media/20287c_dafb052020004dbb95942623839c59ed~mv2.png?originWidth=768&originHeight=576"
-                  alt="Young adults in community service"
+                  src="https://static.wixstatic.com/media/20287c_aa850e2b55aa47b8a95957540aee2f31~mv2.jpeg"
                   className="w-full h-full object-cover"
                   width={800}
-                />
+                  originWidth={1008}
+                  originHeight={756}
+                  focalPointX={47.18915343915344}
+                  focalPointY={50.02645502645503} />
               </div>
             </motion.div>
           </div>
         </div>
       </section>
-
       {/* For Partners & Donors */}
       <section className="w-full py-20 md:py-32 bg-black">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -148,11 +147,13 @@ export default function GetInvolvedPage() {
             >
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
                 <Image
-                  src="https://static.wixstatic.com/media/20287c_faab30eba923427abbf339668c0d15a6~mv2.png?originWidth=768&originHeight=576"
-                  alt="Partnership and collaboration"
+                  src="https://static.wixstatic.com/media/20287c_d6087d5a16a24d51b4acf0de81d72883~mv2.jpg"
                   className="w-full h-full object-cover"
                   width={800}
-                />
+                  originWidth={1280}
+                  originHeight={720}
+                  focalPointX={47.1796875}
+                  focalPointY={26.763888888888886} />
               </div>
             </motion.div>
 
@@ -200,7 +201,6 @@ export default function GetInvolvedPage() {
           </div>
         </div>
       </section>
-
       {/* Contact Form */}
       <section className="w-full py-20 md:py-32 bg-white">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
@@ -336,7 +336,6 @@ export default function GetInvolvedPage() {
           </motion.div>
         </div>
       </section>
-
       <Footer />
     </div>
   );
