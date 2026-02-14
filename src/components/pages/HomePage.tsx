@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Leaf, Scale, GraduationCap, Utensils, Users, Brain, Church, ChevronRight, Heart } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { BaseCrudService } from '@/integrations';
-import { ImpactStatistics } from '@/entities';
+// ... keep existing code (imports) ...
 
 // --- Types ---
 interface Program {
@@ -103,28 +102,7 @@ const StaggerItem = ({ children, className = "" }: { children: React.ReactNode; 
 };
 
 export default function HomePage() {
-  // --- Data Fidelity Protocol: Identify & Canonize ---
-  const [statistics, setStatistics] = useState<ImpactStatistics[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Preserve original data fetching logic
-  useEffect(() => {
-    loadStatistics();
-  }, []);
-
-  const loadStatistics = async () => {
-    setIsLoading(true);
-    try {
-      const result = await BaseCrudService.getAll<ImpactStatistics>('impactstatistics');
-      setStatistics(result.items);
-    } catch (error) {
-      console.error('Error loading statistics:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Preserve original programs data
+  // --- Programs Data ---
   const programs: Program[] = [
     {
       icon: Scale,
@@ -347,33 +325,6 @@ export default function HomePage() {
                   </div>
                 </FadeInUp>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- IMPACT NUMBERS (Sticky & Dynamic) --- */}
-        <section className="relative w-full bg-black text-white py-32 overflow-hidden">
-
-          <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24 relative z-10">
-            <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
-              {/* Sticky Header */}
-              <div className="lg:w-1/3">
-                <div className="sticky top-32">
-                  <FadeInUp>
-                    <h2 className="font-heading text-5xl md:text-6xl mb-6">Our Impact <br/>By The Numbers</h2>
-                    <p className="text-white/80 text-lg mb-8 max-w-md">
-                      Measuring our progress towards a more just and sustainable future across the 17th Episcopal District.
-                    </p>
-                    <Link to="/programs">
-                      <Button variant="link" className="text-accent-red p-0 text-lg hover:text-white transition-colors">
-                        View Strategic Plan <ArrowRight className="ml-2 w-5 h-5" />
-                      </Button>
-                    </Link>
-                  </FadeInUp>
-                </div>
-              </div>
-              {/* Stats Grid */}
-
             </div>
           </div>
         </section>

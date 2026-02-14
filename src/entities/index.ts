@@ -28,26 +28,3 @@ export interface CorePrograms {
   /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   programImage?: string;
 }
-
-
-/**
- * Collection ID: impactstatistics
- * Interface for ImpactStatistics
- */
-export interface ImpactStatistics {
-  _id: string;
-  _createdDate?: Date;
-  _updatedDate?: Date;
-  /** @wixFieldType text */
-  statisticLabel?: string;
-  /** @wixFieldType number */
-  statisticValue?: number;
-  /** @wixFieldType text */
-  statisticUnit?: string;
-  /** @wixFieldType text */
-  statisticDescription?: string;
-  /** @wixFieldType url */
-  linkUrl?: string;
-  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
-  statisticImage?: string;
-}
