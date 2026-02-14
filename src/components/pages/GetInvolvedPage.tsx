@@ -111,7 +111,7 @@ export default function GetInvolvedPage() {
                 ))}
               </div>
 
-              <p className="font-paragraph text-base text-foreground/80 italic">
+              <p className="font-paragraph text-base text-gray-700 italic">
                 "Use your gifts, talents, and resources in service of the Lord and your community."
               </p>
             </motion.div>

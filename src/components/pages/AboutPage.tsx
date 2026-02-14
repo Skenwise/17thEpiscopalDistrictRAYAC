@@ -70,7 +70,7 @@ export default function AboutPage() {
               <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-8">
                 Our History
               </h2>
-              <div className="space-y-6 font-paragraph text-lg text-white/90 leading-relaxed">
+              <div className="space-y-6 font-paragraph text-lg text-gray-800 leading-relaxed">
                 <p>
                   Founded in 1937 as the RAYC (Richard Allen Young Council), our organization has a rich heritage of empowering young people within the African Methodist Episcopal Church.
                 </p>
