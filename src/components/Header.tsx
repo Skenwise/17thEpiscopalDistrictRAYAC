@@ -31,7 +31,7 @@ export default function Header() {
               originWidth={368}
               originHeight={356} />
             <div className="flex flex-col gap-0.5">
-              <div className="text-xs md:text-sm font-semibold tracking-widest text-accent-red uppercase">
+              <div className="text-xs md:text-sm font-semibold tracking-widest uppercase text-primary-foreground">
                 17th Episcopal
               </div>
               <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading">
