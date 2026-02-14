@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Image } from '@/components/ui/image';
 import { Menu, X } from 'lucide-react';
 
 export default function Header() {
@@ -21,7 +22,13 @@ export default function Header() {
       <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-3">
+            <Image
+              src="https://static.wixstatic.com/media/20287c_1d9ffdfbf3ce4e0d9581ad38eceb30e9~mv2.png?originWidth=128&originHeight=128"
+              alt="RAYAC Logo"
+              className="h-12 w-auto"
+              width={48}
+            />
             <div className="font-heading text-2xl md:text-3xl text-accent-red font-bold tracking-tight">
               RAYAC
             </div>
