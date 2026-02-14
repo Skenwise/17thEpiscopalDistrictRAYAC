@@ -34,7 +34,7 @@ export default function Header() {
               <div className="text-xs md:text-sm font-semibold tracking-widest uppercase text-primary-foreground">
                 17th Episcopal
               </div>
-              <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading">
+              <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading uppercase">
                 District
               </div>
             </div>
