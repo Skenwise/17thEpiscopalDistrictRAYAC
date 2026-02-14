@@ -113,8 +113,8 @@ export default function HomePage() {
             className="absolute inset-0 z-0"
           >
             <Image
-              src="https://static.wixstatic.com/media/20287c_5d347ad2792745118870c6e8e6979d35~mv2.png?originWidth=1920&originHeight=1024"
-              alt="Young adults united in faith and purpose"
+              src="https://static.wixstatic.com/media/20287c_74e40238004a42d6b37613c2397c8f60~mv2.png?originWidth=1920&originHeight=1024"
+              alt="Abstract geometric design with vibrant gradients"
               className="w-full h-full object-cover"
               width={1920}
             />
