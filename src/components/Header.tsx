@@ -29,7 +29,7 @@ export default function Header() {
               width={48}
               originWidth={368}
               originHeight={356} />
-            <div className="font-heading text-2xl md:text-3xl text-accent-red font-bold tracking-tight">
+            <div className="text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground font-paragraph">
               17th Episcopal District
             </div>
           </Link>
