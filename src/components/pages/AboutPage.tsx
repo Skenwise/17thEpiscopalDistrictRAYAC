@@ -161,7 +161,7 @@ export default function AboutPage() {
             <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Our Leadership
             </h2>
-            <p className="font-paragraph text-lg md:text-xl text-foreground max-w-4xl mx-auto leading-relaxed">
+            <p className="font-paragraph text-lg md:text-xl text-gray-800 max-w-4xl mx-auto leading-relaxed">
               RAYAC is guided by a dedicated leadership structure committed to excellence and impact.
             </p>
           </motion.div>
@@ -180,7 +180,7 @@ export default function AboutPage() {
               <h3 className="font-heading text-2xl text-accent-red mb-4">
                 Episcopal Executive Board
               </h3>
-              <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
+              <p className="font-paragraph text-base text-gray-800 leading-relaxed">
                 Our governing body provides strategic oversight and ensures alignment with the AME Church's mission and values across the 17th Episcopal District.
               </p>
             </motion.div>
@@ -198,10 +198,10 @@ export default function AboutPage() {
               <h3 className="font-heading text-2xl text-accent-red mb-4">
                 Management Team
               </h3>
-              <p className="font-paragraph text-base text-foreground/90 leading-relaxed mb-4">
+              <p className="font-paragraph text-base text-gray-800 leading-relaxed mb-4">
                 Our operational leadership ensures effective program implementation:
               </p>
-              <ul className="space-y-2 font-paragraph text-base text-foreground/90">
+              <ul className="space-y-2 font-paragraph text-base text-gray-800">
                 <li>• Executive Director</li>
                 <li>• Director of Programs</li>
                 <li>• Director of Finance</li>
@@ -224,7 +224,7 @@ export default function AboutPage() {
             <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Our Strategic Approach
             </h2>
-            <p className="font-paragraph text-lg md:text-xl text-foreground max-w-4xl mx-auto leading-relaxed">
+            <p className="font-paragraph text-lg md:text-xl text-gray-800 max-w-4xl mx-auto leading-relaxed">
               We are committed to building on our strengths while tackling challenges through strategic resource mobilization and leadership development.
             </p>
           </motion.div>
@@ -252,7 +252,7 @@ export default function AboutPage() {
                     <div className="bg-accent-red/20 rounded-full p-1 mt-1 flex-shrink-0">
                       <div className="w-2 h-2 bg-accent-red rounded-full" />
                     </div>
-                    <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
+                    <p className="font-paragraph text-base text-gray-800 leading-relaxed">
                       {strength}
                     </p>
                   </li>
@@ -282,7 +282,7 @@ export default function AboutPage() {
                     <div className="bg-accent-red/20 rounded-full p-1 mt-1 flex-shrink-0">
                       <div className="w-2 h-2 bg-accent-red rounded-full" />
                     </div>
-                    <p className="font-paragraph text-base text-foreground/90 leading-relaxed">
+                    <p className="font-paragraph text-base text-gray-800 leading-relaxed">
                       {opportunity}
                     </p>
                   </li>

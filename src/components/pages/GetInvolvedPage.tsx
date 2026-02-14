@@ -87,7 +87,7 @@ export default function GetInvolvedPage() {
               <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
                 For Young Adults
               </h2>
-              <p className="font-paragraph text-lg text-foreground mb-8 leading-relaxed">
+              <p className="font-paragraph text-lg text-gray-800 mb-8 leading-relaxed">
                 Are you between 21 and 39? Find your purpose and community with RAYAC. Join us in our mission of discipleship, leadership, and service.
               </p>
               
@@ -104,7 +104,7 @@ export default function GetInvolvedPage() {
                     <div className="bg-secondary/20 rounded-full p-1 mt-1 flex-shrink-0">
                       <div className="w-2 h-2 bg-secondary rounded-full" />
                     </div>
-                    <p className="font-paragraph text-base text-foreground/90">
+                    <p className="font-paragraph text-base text-gray-800">
                       {benefit}
                     </p>
                   </motion.div>
@@ -214,7 +214,7 @@ export default function GetInvolvedPage() {
             <h2 className="font-heading text-4xl md:text-5xl text-accent-red mb-6">
               Get in Touch
             </h2>
-            <p className="font-paragraph text-lg md:text-xl text-foreground max-w-3xl mx-auto">
+            <p className="font-paragraph text-lg md:text-xl text-gray-800 max-w-3xl mx-auto">
               Ready to join us or partner with RAYAC? Fill out the form below and we'll get back to you soon.
             </p>
           </motion.div>
@@ -232,7 +232,7 @@ export default function GetInvolvedPage() {
                 <h3 className="font-heading text-2xl text-accent-red mb-3">
                   Thank You!
                 </h3>
-                <p className="font-paragraph text-base text-foreground/90">
+                <p className="font-paragraph text-base text-gray-800">
                   We've received your message and will get back to you shortly.
                 </p>
               </div>
@@ -240,7 +240,7 @@ export default function GetInvolvedPage() {
               <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-2xl border border-accent-red/20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <Label htmlFor="name" className="font-paragraph text-base text-foreground mb-2 flex items-center gap-2">
+                    <Label htmlFor="name" className="font-paragraph text-base text-gray-800 mb-2 flex items-center gap-2">
                       <User className="h-4 w-4" />
                       Full Name *
                     </Label>
@@ -257,7 +257,7 @@ export default function GetInvolvedPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="font-paragraph text-base text-foreground mb-2 flex items-center gap-2">
+                    <Label htmlFor="email" className="font-paragraph text-base text-gray-800 mb-2 flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       Email Address *
                     </Label>
@@ -276,7 +276,7 @@ export default function GetInvolvedPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <Label htmlFor="phone" className="font-paragraph text-base text-foreground mb-2 flex items-center gap-2">
+                    <Label htmlFor="phone" className="font-paragraph text-base text-gray-800 mb-2 flex items-center gap-2">
                       <Phone className="h-4 w-4" />
                       Phone Number
                     </Label>
@@ -292,7 +292,7 @@ export default function GetInvolvedPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="interest" className="font-paragraph text-base text-foreground mb-2">
+                    <Label htmlFor="interest" className="font-paragraph text-base text-gray-800 mb-2">
                       I'm Interested In *
                     </Label>
                     <Input
@@ -309,7 +309,7 @@ export default function GetInvolvedPage() {
                 </div>
 
                 <div className="mb-8">
-                  <Label htmlFor="message" className="font-paragraph text-base text-foreground mb-2 flex items-center gap-2">
+                  <Label htmlFor="message" className="font-paragraph text-base text-gray-800 mb-2 flex items-center gap-2">
                     <MessageSquare className="h-4 w-4" />
                     Message *
                   </Label>

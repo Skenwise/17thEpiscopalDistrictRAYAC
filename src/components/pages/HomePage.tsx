@@ -325,7 +325,7 @@ export default function HomePage() {
 
               <div className="lg:col-span-7">
                 <FadeInUp delay={0.2}>
-                  <p className="font-paragraph text-xl md:text-2xl lg:text-3xl text-foreground/80 leading-relaxed font-light mb-8">
+                  <p className="font-paragraph text-xl md:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-light mb-8">
                     Ministering to the intellectual (mind), physical (body) and spiritual (soul) needs of the members of the body of Christ.
                   </p>
                   <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
