@@ -28,3 +28,25 @@ export interface CorePrograms {
   /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
   programImage?: string;
 }
+
+
+/**
+ * Collection ID: products
+ * @catalog This collection is an eCommerce catalog
+ * Interface for Products
+ */
+export interface Products {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  itemName?: string;
+  /** @wixFieldType number */
+  itemPrice?: number;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  itemImage?: string;
+  /** @wixFieldType text */
+  itemDescription?: string;
+  /** @wixFieldType url */
+  itemUrl?: string;
+}

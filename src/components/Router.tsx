@@ -6,6 +6,7 @@ import HomePage from '@/components/pages/HomePage';
 import ProgramsPage from '@/components/pages/ProgramsPage';
 import AboutPage from '@/components/pages/AboutPage';
 import GetInvolvedPage from '@/components/pages/GetInvolvedPage';
+import DigitalMarketplacePage from '@/components/pages/DigitalMarketplacePage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -49,6 +50,13 @@ const router = createBrowserRouter([
         element: <GetInvolvedPage />,
         routeMetadata: {
           pageIdentifier: 'get-involved',
+        },
+      },
+      {
+        path: "digital-marketplace",
+        element: <DigitalMarketplacePage />,
+        routeMetadata: {
+          pageIdentifier: 'digital-marketplace',
         },
       },
       {
