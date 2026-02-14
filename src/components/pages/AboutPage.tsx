@@ -41,7 +41,7 @@ export default function AboutPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-secondary to-secondary/80">
+      <section className="relative w-full py-24 md:py-32 bg-gradient-to-br from-primary to-primary/80">
         <div className="max-w-[100rem] mx-auto px-6 md:px-12 lg:px-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

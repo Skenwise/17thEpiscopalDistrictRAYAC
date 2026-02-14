@@ -23,15 +23,15 @@ export default {
                 paragraph: "open sans"
             },
             colors: {
-                'accent-orange': '#F4A261',
+                'accent-orange': '#D4A574',
                 destructive: '#E53935',
                 'destructive-foreground': '#FFFFFF',
                 background: '#FFFFFF',
-                secondary: '#8FC93A',
-                foreground: '#333333',
+                secondary: '#8B7355',
+                foreground: '#2C2C2C',
                 'secondary-foreground': '#000000',
                 'primary-foreground': '#FFFFFF',
-                primary: '#2A5C8A'
+                primary: '#1B3A52'
             },
         },
     },

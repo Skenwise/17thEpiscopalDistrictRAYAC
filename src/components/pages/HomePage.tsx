@@ -230,10 +230,10 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[1.1] mb-8 drop-shadow-lg"
+                className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[1.1] mb-8 drop-shadow-lg font-light"
               >
                 A New Generation <br />
-                <span className="text-secondary italic">of Believers.</span>
+                <span className="text-accent-orange italic font-normal">of Believers.</span>
               </motion.h1>
 
               <motion.p
