@@ -72,7 +72,13 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 font-paragraph text-lg text-gray-800 leading-relaxed">
                 <p>
-                  Founded in 1937 as the RAYC (Richard Allen Young Council), our organization has a rich heritage of empowering young people within the African Methodist Episcopal Church.
+                  The Richard Allen Youth Council was founded in Memphis, Tennessee, during the 150th celebration of the African Methodist Episcopal Church.
+
+The Sesquicential Festival of Negro Methodism was celebrated by the African Methodist Episcopal Church, June 22-27, 1937. It marked 150 years of progress by the AME Church since Richard Allen and his followers withdrew from St. George M.E. Church in Philadelphia, PA, in 1787. It was the beginning of a movement for self-help, self-movement, and self-direction in the religious life of people of African descent in America.
+
+This agency came from the vision of Dr. S. S. Morris, Sr., who committed to the idea of bringing existing youth organizations together in the format of a council. It was not the intent of the RAYC to replace any youth agency or organization. Each organization would keep its own identity.
+
+The primary goal of the RAYC was to coordinate and unify the total program which the local church offered its youth.
                 </p>
                 <p>
                   We evolved into the Richard Allen Young Adults Council (RAYAC) to specifically focus on young adults aged 21-39, recognizing the unique potential and challenges of this demographic.
