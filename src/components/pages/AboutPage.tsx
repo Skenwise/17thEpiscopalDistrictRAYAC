@@ -51,7 +51,7 @@ export default function AboutPage() {
               About RAYAC
             </h1>
             <p className="font-paragraph text-xl md:text-2xl text-white/95 max-w-4xl mx-auto">
-              Empowering Young Adults to Lead with Faith and Purpose
+              I Must Be About My Fathers Business
             </p>
           </motion.div>
         </div>
