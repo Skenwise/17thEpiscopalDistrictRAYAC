@@ -82,7 +82,7 @@ const StaggerContainer = ({ children, className = "" }: { children: React.ReactN
         }
       }}
       className={className}
-    >
+      className="bg-accent-silver">
       {children}
     </motion.div>
   );
@@ -353,8 +353,7 @@ export default function HomePage() {
 
         {/* --- IMPACT NUMBERS (Sticky & Dynamic) --- */}
         <section className="relative w-full bg-black text-white py-32 overflow-hidden">
-          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay" />
-          
+
           <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24 relative z-10">
             <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
               {/* Sticky Header */}
@@ -373,42 +372,8 @@ export default function HomePage() {
                   </FadeInUp>
                 </div>
               </div>
-
               {/* Stats Grid */}
-              <div className="lg:w-2/3">
-                {isLoading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-64 bg-white/10 rounded-2xl animate-pulse" />
-                    ))}
-                  </div>
-                ) : (
-                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {statistics.length > 0 ? (
-                      statistics.map((stat, index) => (
-                        <StaggerItem key={stat._id} className="group">
-                          <div className="bg-white/5 backdrop-blur-sm border border-accent-red/30 p-8 rounded-2xl hover:bg-white/10 transition-all duration-500 h-full flex flex-col justify-between hover:transform hover:-translate-y-2">
-                            <div>
-                              <div className="text-6xl md:text-7xl font-heading font-bold text-accent-red mb-2">
-                                {stat.statisticValue}
-                                <span className="text-4xl text-accent-silver ml-1">{stat.statisticUnit}</span>
-                              </div>
-                              <h3 className="text-xl font-bold mb-3">{stat.statisticLabel}</h3>
-                            </div>
-                            <p className="text-white/60 text-sm border-t border-accent-red/30 pt-4 mt-4">
-                              {stat.statisticDescription || "Driving change in our communities."}
-                            </p>
-                          </div>
-                        </StaggerItem>
-                      ))
-                    ) : (
-                      <div className="col-span-2 text-center py-12 bg-white/5 rounded-2xl">
-                        <p className="text-white/60">Impact statistics loading...</p>
-                      </div>
-                    )}
-                  </StaggerContainer>
-                )}
-              </div>
+
             </div>
           </div>
         </section>
@@ -456,7 +421,7 @@ export default function HomePage() {
                             </span>
                           </div>
                           
-                          <p className="font-paragraph text-foreground/70 mb-8 leading-relaxed">
+                          <p className="font-paragraph mb-8 leading-relaxed text-secondary">
                             {program.description}
                           </p>
                           

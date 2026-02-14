@@ -23,16 +23,17 @@ export default {
                 paragraph: "open sans"
             },
             colors: {
-                'accent-red': '#C8102E',
-                'accent-silver': '#D9D9D9',
-                destructive: '#C8102E',
-                'destructive-foreground': '#FFFFFF',
-                background: '#FFFFFF',
-                secondary: '#4A2C1D',
-                foreground: '#FFFFFF',
-                'secondary-foreground': '#FFFFFF',
-                'primary-foreground': '#FFFFFF',
-                primary: '#A00000'
+                primary: "#A00000",
+                "primary-foreground": "#FFFFFF",
+                secondary: "#4A2C1D",
+                "secondary-foreground": "#FFFFFF",
+                background: "#FFFFFF",
+                "accent-red": "#C8102E",
+                "accent-silver": "#D9D9D9",
+                destructive: "#C8102E",
+                "destructive-foreground": "#FFFFFF",
+                foreground: "#FFFFFF",
+                "color-11": "#261010ff"
             },
         },
     },
