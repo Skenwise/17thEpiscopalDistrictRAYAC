@@ -1,12 +1,12 @@
 // HPI 1.7-G
-import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from 'framer-motion';
-import { Image } from '@/components/ui/image';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Church, ChevronRight, Heart } from 'lucide-react';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { Button } from '@/components/ui/button';
+import { Image } from '@/components/ui/image';
+import { motion, useInView, useScroll, useSpring, useTransform } from 'framer-motion';
+import { ArrowRight, ChevronRight, Church, Heart } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 // ... keep existing code (imports) ...
 
 // --- Types ---
@@ -108,7 +108,7 @@ export default function HomePage() {
         {/* --- HERO SECTION --- */}
         <section ref={heroRef} className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black">
           {/* Parallax Background */}
-          <motion.div 
+          <motion.div
             style={{ y: heroY, opacity: heroOpacity }}
             className="absolute inset-0 z-0"
           >
@@ -116,7 +116,7 @@ export default function HomePage() {
               src="https://static.wixstatic.com/media/20287c_da5a4e42cac34cadbb88fb8b65cbfea1~mv2.avif"
               alt="RAYAC Logo"
               className="w-full h-full object-cover"
-              width={1920}
+              width={1100}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 mix-blend-multiply" />
             <div className="absolute inset-0 bg-black/20" />
@@ -282,12 +282,12 @@ export default function HomePage() {
               <div className="inline-block mb-8 p-4 border border-white/30 rounded-full backdrop-blur-md bg-white/10">
                 <span className="text-white font-bold tracking-widest uppercase px-4">Join The Movement</span>
               </div>
-              
+
               <h2 className="font-heading text-5xl md:text-7xl text-white mb-8 leading-tight">
                 Guided by Our <br/>
                 <span className="text-accent-red">Fourfold Purpose</span>
               </h2>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-16 max-w-5xl mx-auto">
                 {['Discipleship', 'Leadership', 'Fellowship', 'Networking'].map((item, i) => (
                   <div key={item} className="text-white/90 font-heading text-xl md:text-2xl border-t border-accent-red/50 pt-4">
