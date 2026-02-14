@@ -80,7 +80,7 @@ export default function ProgramsPage() {
             transition={{ duration: 0.6 }}
             className="font-paragraph text-lg md:text-xl text-foreground text-center max-w-5xl mx-auto leading-relaxed"
           >
-            Our five-year strategic plan is built around seven core programs designed to respond to the most pressing issues in our communities, from the effects of climate change to the need for peace and justice.
+            Stemming from this purpose, RAYAC has identified seven (7) core Programs for the coming five-year period which will greatly benefit from collaboration with stakeholders through learning, solidarity, and resource support (technical and financial). These seven (7) Programs will be supported by the Institutional Capacity Building Program (ICBP), a Program which will enhance the capacity of RAYAC to implement the Programs effectively and efficiently at all levels of the 17th Episcopal district.
           </motion.p>
         </div>
       </section>
