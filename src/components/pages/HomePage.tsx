@@ -194,7 +194,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-background font-paragraph selection:bg-secondary selection:text-white overflow-x-clip">
       <ScrollProgress />
       <Header />
-
       <main>
         {/* --- HERO SECTION --- */}
         <section ref={heroRef} className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black">
@@ -331,19 +330,19 @@ export default function HomePage() {
                   <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="border-l-2 border-gray-200 pl-6">
                       <h3 className="font-heading text-xl text-primary mb-2">Discipleship</h3>
-                      <p className="text-foreground/70">Bringing young adults into a covenant relationship with Jesus Christ, teaching them how to live Christ-centred lives, and serve as Christian mentors to youths.</p>
+                      <p className="text-secondary">Bringing young adults into a covenant relationship with Jesus Christ, teaching them how to live Christ-centred lives, and serve as Christian mentors to youths.</p>
                     </div>
                     <div className="border-l-2 border-gray-200 pl-6">
                       <h3 className="font-heading text-xl text-primary mb-2">Leadership Training</h3>
-                      <p className="text-foreground/70">Develop young adults into Christian leaders within the AME church and community at large to effectively represent and voice the concerns of a new generation.</p>
+                      <p className="text-secondary">Develop young adults into Christian leaders within the AME church and community at large to effectively represent and voice the concerns of a new generation.</p>
                     </div>
                     <div className="border-l-2 border-gray-200 pl-6">
                       <h3 className="font-heading text-xl text-primary mb-2">Fellowship</h3>
-                      <p className="text-foreground/70">Create and provide opportunities for Christian fellowship among young adults.</p>
+                      <p className="text-secondary">Create and provide opportunities for Christian fellowship among young adults.</p>
                     </div>
                     <div className="border-l-2 border-gray-200 pl-6">
                       <h3 className="font-heading text-xl text-primary mb-2">Networking</h3>
-                      <p className="text-foreground/70">Provide resources for young adult ministries within the AME church and the community at large and provide opportunities for young adults to use their God-given gifts and talents for Kingdom building.</p>
+                      <p className="text-secondary">Provide resources for young adult ministries within the AME church and the community at large and provide opportunities for young adults to use their God-given gifts and talents for Kingdom building.</p>
                     </div>
                   </div>
                 </FadeInUp>
@@ -422,7 +421,7 @@ export default function HomePage() {
               <h2 className="font-heading text-4xl md:text-6xl text-primary mb-6">
                 Seven Core Programs
               </h2>
-              <p className="font-paragraph text-xl text-foreground/70">
+              <p className="font-paragraph text-xl text-secondary">
                 Transformative initiatives designed to respond to the most pressing issues in our communities.
               </p>
             </FadeInUp>
@@ -540,7 +539,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
