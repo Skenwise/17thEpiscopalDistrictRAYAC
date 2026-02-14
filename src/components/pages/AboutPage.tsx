@@ -7,19 +7,17 @@ import { Shield, Target, TrendingUp, Users } from 'lucide-react';
 export default function AboutPage() {
   const conferences = [
     'South East Zambia Conference (SEZC)',
-    'East Africa Conference',
-    'Congo Conference',
-    'Burundi Conference',
-    'Rwanda Conference',
-    'Tanzania Conference',
-    'Kenya Conference',
-    'Uganda Conference',
-    'South Sudan Conference',
-    'Ethiopia Conference',
-    'Malawi Conference',
-    'Zimbabwe Conference',
-    'Mozambique Conference',
-    'Botswana Conference'
+    'South West Zambia conference (SWZC)',
+    'Zambezi conference',
+    'North East Zambia conference (NEZC)',
+    'North West Zambia conference (NWZC)',
+    'East Africa conference (EAC)',
+    'Great Lakes conference (GLC)',
+    'Katanga conference',
+    'Kananga conference',
+    'Mbujimayi conference',
+    'Congo River conference (CRC)',
+    'Burundi conference',
   ];
 
   const strengths = [
