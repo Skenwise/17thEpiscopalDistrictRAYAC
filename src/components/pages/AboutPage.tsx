@@ -1,12 +1,12 @@
-import { motion } from 'framer-motion';
-import { Image } from '@/components/ui/image';
-import { Users, Target, TrendingUp, Shield } from 'lucide-react';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { Image } from '@/components/ui/image';
+import { motion } from 'framer-motion';
+import { Shield, Target, TrendingUp, Users } from 'lucide-react';
 
 export default function AboutPage() {
   const conferences = [
-    'Zambia Conference',
+    'South East Zambia Conference (SEZC)',
     'East Africa Conference',
     'Congo Conference',
     'Burundi Conference',
