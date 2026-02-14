@@ -4,6 +4,29 @@
  */
 
 /**
+ * Collection ID: appaccessusers
+ * Interface for AppAccessUsers
+ */
+export interface AppAccessUsers {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  userEmail?: string;
+  /** @wixFieldType text */
+  wixOrderId?: string;
+  /** @wixFieldType text */
+  paymentStatus?: string;
+  /** @wixFieldType datetime */
+  purchaseDate?: Date | string;
+  /** @wixFieldType text */
+  productName?: string;
+  /** @wixFieldType text */
+  uniqueUserId?: string;
+}
+
+
+/**
  * Collection ID: coreprograms
  * Interface for CorePrograms
  */
