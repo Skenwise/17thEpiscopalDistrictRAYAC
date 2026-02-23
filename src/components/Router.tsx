@@ -1,14 +1,20 @@
-import { MemberProvider } from '@/integrations';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
-import { ScrollToTop } from '@/lib/scroll-to-top';
-import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
-import HomePage from '@/components/pages/HomePage';
-import ProgramsPage from '@/components/pages/ProgramsPage';
-import AboutPage from '@/components/pages/AboutPage';
-import GetInvolvedPage from '@/components/pages/GetInvolvedPage';
-import DigitalMarketplacePage from '@/components/pages/DigitalMarketplacePage';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import { ScrollToTop } from "@/lib/scroll-to-top";
 
-// Layout component that includes ScrollToTop
+import HomePage from "@/components/pages/HomePage";
+import ProgramsPage from "@/components/pages/ProgramsPage";
+import AboutPage from "@/components/pages/AboutPage";
+import GetInvolvedPage from "@/components/pages/GetInvolvedPage";
+import DigitalMarketplacePage from "@/components/pages/DigitalMarketplacePage";
+
+function ErrorPage() {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <h1 className="text-2xl font-bold">Something went wrong.</h1>
+    </div>
+  );
+}
+
 function Layout() {
   return (
     <>
@@ -18,61 +24,27 @@ function Layout() {
   );
 }
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Layout />,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: "programs", element: <ProgramsPage /> },
+        { path: "about", element: <AboutPage /> },
+        { path: "get-involved", element: <GetInvolvedPage /> },
+        { path: "digital-marketplace", element: <DigitalMarketplacePage /> },
+        { path: "*", element: <Navigate to="/" replace /> },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-        routeMetadata: {
-          pageIdentifier: 'home',
-        },
-      },
-      {
-        path: "programs",
-        element: <ProgramsPage />,
-        routeMetadata: {
-          pageIdentifier: 'programs',
-        },
-      },
-      {
-        path: "about",
-        element: <AboutPage />,
-        routeMetadata: {
-          pageIdentifier: 'about',
-        },
-      },
-      {
-        path: "get-involved",
-        element: <GetInvolvedPage />,
-        routeMetadata: {
-          pageIdentifier: 'get-involved',
-        },
-      },
-      {
-        path: "digital-marketplace",
-        element: <DigitalMarketplacePage />,
-        routeMetadata: {
-          pageIdentifier: 'digital-marketplace',
-        },
-      },
-      {
-        path: "*",
-        element: <Navigate to="/" replace />,
-      },
-    ],
-  },
-], {
-  basename: import.meta.env.BASE_NAME,
-});
+    basename: import.meta.env.BASE_NAME,
+  }
+);
 
 export default function AppRouter() {
-  return (
-    <MemberProvider>
-      <RouterProvider router={router} />
-    </MemberProvider>
-  );
+  return <RouterProvider router={router} />;
 }

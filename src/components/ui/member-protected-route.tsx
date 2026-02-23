@@ -1,58 +1,42 @@
-import { ReactNode } from 'react';
-import { useMember } from '@/integrations';
+import { ReactNode, useState, useEffect } from 'react';
 import { SignIn } from '@/components/ui/sign-in';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-interface SignInProps {
-  title?: string;
-  message?: string;
-  className?: string;
-  cardClassName?: string;
-  buttonClassName?: string;
-  buttonText?: string;
-}
-
-interface LoadingSpinnerProps {
-  message?: string;
-  className?: string;
-  spinnerClassName?: string;
-}
-
 interface MemberProtectedRouteProps {
   children: ReactNode;
-
-  // Simple props for quick customization
+  isAuthenticated?: boolean; // optionally pass in auth state
+  isLoading?: boolean; // optionally pass in loading state
   messageToSignIn?: string;
   messageToLoading?: string;
   signInTitle?: string;
   signInClassName?: string;
   loadingClassName?: string;
-
-  // Advanced prop objects for full customization
-  signInProps?: Partial<SignInProps>;
-  loadingSpinnerProps?: Partial<LoadingSpinnerProps>;
 }
 
 export function MemberProtectedRoute({
   children,
+  isAuthenticated = false,
+  isLoading = false,
   messageToSignIn = "Please sign in to access this page.",
   messageToLoading = "Loading page...",
   signInTitle = "Sign In Required",
   signInClassName = "",
   loadingClassName = "",
-  signInProps = {},
-  loadingSpinnerProps = {}
 }: MemberProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useMember();
 
-  if (isLoading) {
+  // Optional: simulate loading state for demo
+  const [loading, setLoading] = useState(isLoading);
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => setLoading(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <LoadingSpinner
-          message={messageToLoading}
-          className={loadingClassName}
-          {...loadingSpinnerProps}
-        />
+        <LoadingSpinner message={messageToLoading} className={loadingClassName} />
       </div>
     );
   }
@@ -60,12 +44,7 @@ export function MemberProtectedRoute({
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <SignIn
-          title={signInTitle}
-          message={messageToSignIn}
-          className={signInClassName}
-          {...signInProps}
-        />
+        <SignIn title={signInTitle} message={messageToSignIn} className={signInClassName} />
       </div>
     );
   }
