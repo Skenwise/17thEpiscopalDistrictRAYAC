@@ -13,7 +13,8 @@ export default function Header() {
     { name: 'Our Programs', path: '/programs' },
     { name: 'About Us', path: '/about' },
     { name: 'Get Involved', path: '/get-involved' },
-    { name: 'Digital Marketplace', path: '/digital-marketplace' }
+    { name: 'Digital Marketplace', path: '/digital-marketplace' },
+    { name: 'Hymn Book', path: '/hymn-book' }
   ];
 
   const isActive = (path: string) => location.pathname === path;
