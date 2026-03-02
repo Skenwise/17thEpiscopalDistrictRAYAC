@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
@@ -12,6 +13,7 @@ interface Product {
   itemPrice?: number;
   itemImage?: string;
   itemDescription?: string;
+  currency?: string;
 }
 
 // Helper: format price
@@ -25,9 +27,18 @@ const fetchProducts = async (): Promise<Product[]> => {
     setTimeout(() => {
       resolve([
         {
+          _id: 'hymn-book',
+          itemName: 'Hymn Book',
+          itemPrice: 50,
+          currency: 'ZMW',
+          itemDescription: 'Full 17th Episcopal District hymnal – one‑time purchase.',
+          itemImage: 'https://via.placeholder.com/400x256',
+        },
+        {
           _id: '1',
           itemName: 'Sample Product',
           itemPrice: 29.99,
+          currency: 'USD',
           itemDescription: 'This is a sample product.',
           itemImage: 'https://via.placeholder.com/400x256',
         },
@@ -35,6 +46,7 @@ const fetchProducts = async (): Promise<Product[]> => {
           _id: '2',
           itemName: 'Another Product',
           itemPrice: 49.99,
+          currency: 'USD',
           itemDescription: 'Another example product.',
           itemImage: 'https://via.placeholder.com/400x256',
         },
@@ -46,8 +58,8 @@ const fetchProducts = async (): Promise<Product[]> => {
 export default function DigitalMarketplacePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [addingItemId, setAddingItemId] = useState<string | null>(null);
   const currency = 'USD';
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -64,13 +76,6 @@ export default function DigitalMarketplacePage() {
     loadProducts();
   }, []);
 
-  const addToCart = async (productId: string) => {
-    setAddingItemId(productId);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 500));
-    setAddingItemId(null);
-    alert(`Added product ${productId} to cart!`);
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -110,15 +115,23 @@ export default function DigitalMarketplacePage() {
 
                   <div className="flex items-center justify-between">
                     <span className="font-heading text-3xl font-bold text-primary">
-                      {formatPrice(product.itemPrice || 0, currency)}
+                      {formatPrice(product.itemPrice || 0, product.currency || currency)}
                     </span>
 
                     <Button
-                      onClick={() => addToCart(product._id)}
-                      disabled={addingItemId === product._id}
+                      onClick={() => {
+                        // send user to checkout page with item info in query
+                        navigate(
+                          `/checkout?product=${encodeURIComponent(
+                            product.itemName || ''
+                          )}&price=${product.itemPrice || 0}&currency=${
+                            product.currency || currency
+                          }`
+                        );
+                      }}
                       className="bg-primary hover:bg-accent-red text-white px-6 py-2 rounded-lg transition-colors"
                     >
-                      {addingItemId === product._id ? 'Adding...' : 'Add to Cart'}
+                      Pay
                     </Button>
                   </div>
                 </div>

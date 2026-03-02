@@ -6,34 +6,27 @@ import {v4 as uuidv4} from "uuid";
 initializeApp();
 const db = getFirestore();
 
-const GEEPAY_BASE_URL = "https://api.geepay.co.zm";
+const GEEPAY_BASE_URL = "https://pgsandbox.privatedns.org/v1";
 const HYMN_PRICE = 50;
 
 async function getAccessToken(): Promise<string> {
-  const clientId = process.env.GEEPAY_CLIENT_ID!;
-  const clientSecret = process.env.GEEPAY_CLIENT_SECRET!;
-
-  const params = new URLSearchParams({
-    grant_type: "client_credentials",
-    client_id: clientId,
-    client_secret: clientSecret,
-  });
-
   const response = await fetch(`${GEEPAY_BASE_URL}/oauth/token`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
       "Accept": "application/json",
     } as Record<string, string>,
-    body: params.toString(),
+    body: JSON.stringify({
+      grant_type: "client_credentials",
+      client_id: process.env.GEEPAY_CLIENT_ID!,
+      client_secret: process.env.GEEPAY_CLIENT_SECRET!,
+    }),
   });
 
   const data = await response.json();
-
   if (!data.access_token) {
     throw new Error("Failed to obtain GeePay access token");
   }
-
   return data.access_token;
 }
 
@@ -48,57 +41,71 @@ export const createCheckout = onRequest(
       return;
     }
 
-    const {email, phone, name} = req.body;
+    const {email, phone, name, amount, productName, paymentMethod} = req.body;
 
-    if (!email || !phone || !name) {
-      res.status(400).json({error: "Missing required fields: email, phone, name"});
+    if (!email || !name) {
+      res.status(400).json({error: "Missing required fields"});
       return;
     }
+
+    // amount may be provided by the client; otherwise fall back to HYMN_PRICE
+    const chargeAmount = typeof amount === "number" ? amount : HYMN_PRICE;
 
     try {
       const token = await getAccessToken();
       const transactionRef = uuidv4();
-      const callbackUrl = "https://us-central1-districtrayac.cloudfunctions.net/geepayWebhook";
-      const returnUrl = `https://districtrayac.web.app/payment-success?ref=${transactionRef}`;
+      // build a return URL that includes the product name if available
+      let returnUrl = "https://17thdistrictrayac.org/checkout?payment=success";
+      if (productName) {
+        returnUrl += `&product=${encodeURIComponent(productName)}`;
+      }
 
       await db.collection("payments").doc(transactionRef).set({
         email,
-        phone,
+        phone: phone || null,
         name,
-        amount: HYMN_PRICE,
+        amount: chargeAmount,
+        productName: productName || null,
+        paymentMethod: paymentMethod || null,
         status: "pending",
         createdAt: new Date(),
       });
 
-      const response = await fetch(`${GEEPAY_BASE_URL}/api/v1/checkout/session`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "X-Client-ID": process.env.GEEPAY_CLIENT_ID!,
-          "X-Transaction-Ref": transactionRef,
-          "X-Callback-URL": callbackUrl,
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        } as Record<string, string>,
-        body: JSON.stringify({
-          amount: HYMN_PRICE,
-          order_id: transactionRef,
-          customer: {name, email},
-          return_url: returnUrl,
-          receipt_redirect: true,
-        }),
-      });
+      const response = await fetch(
+        `${GEEPAY_BASE_URL}/checkout/session`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "X-Client-ID": process.env.GEEPAY_CLIENT_ID!,
+            "X-Transaction-Ref": transactionRef,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          } as Record<string, string>,
+          body: JSON.stringify({
+            order_id: transactionRef,
+            amount: chargeAmount,
+            customer: {
+              name: name,
+              email: email,
+            },
+            return_url: returnUrl,
+            receipt_redirect: true,
+          }),
+        }
+      );
 
       const data = await response.json();
+      console.log("GeePay checkout response:", JSON.stringify(data));
 
       if (data.checkout_url) {
         res.status(200).json({checkout_url: data.checkout_url});
       } else {
-        throw new Error("No checkout URL returned from GeePay");
+        throw new Error(data.message || "No checkout URL returned");
       }
     } catch (error: any) {
-      console.error("Checkout creation failed:", error);
-      res.status(500).json({error: error.message || "Failed to create checkout session"});
+      console.error("Checkout failed:", error);
+      res.status(500).json({error: error.message || "Internal server error"});
     }
   }
 );
@@ -115,6 +122,7 @@ export const geepayWebhook = onRequest(
     }
 
     const {status, data} = req.body;
+    console.log("Webhook received:", JSON.stringify(req.body));
 
     if (!data?.transaction_reference) {
       res.status(400).send("Missing transaction reference");
@@ -128,7 +136,6 @@ export const geepayWebhook = onRequest(
       const paymentDoc = await paymentRef.get();
 
       if (!paymentDoc.exists) {
-        console.error(`Payment not found: ${transactionRef}`);
         res.status(404).send("Payment not found");
         return;
       }
@@ -141,6 +148,12 @@ export const geepayWebhook = onRequest(
           externalReference: data.external_reference,
           completedAt: new Date(),
         });
+
+        console.log(
+          `Payment succeeded for ${payment.email}` +
+            (payment.productName ? ` (product: ${payment.productName})` : "") +
+            (payment.paymentMethod ? ` method: ${payment.paymentMethod}` : "")
+        );
 
         const usersSnapshot = await db
           .collection("users")
@@ -168,11 +181,12 @@ export const geepayWebhook = onRequest(
           status: "failed",
           completedAt: new Date(),
         });
+        console.log(`Payment failed for: ${payment.email}`);
       }
 
       res.status(200).send("OK");
     } catch (error: any) {
-      console.error("Webhook processing failed:", error);
+      console.error("Webhook failed:", error);
       res.status(500).send("Internal server error");
     }
   }

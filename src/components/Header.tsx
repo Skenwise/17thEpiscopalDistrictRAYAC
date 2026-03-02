@@ -14,7 +14,7 @@ export default function Header() {
     { name: 'About Us', path: '/about' },
     { name: 'Get Involved', path: '/get-involved' },
     { name: 'Digital Marketplace', path: '/digital-marketplace' },
-    { name: 'Hymn Book', path: '/hymn-book' }
+    // hymn book removed from main navigation; it now lives inside marketplace
   ];
 
   const isActive = (path: string) => location.pathname === path;
