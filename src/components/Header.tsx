@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, UserPlus } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,7 +14,6 @@ export default function Header() {
     { name: 'About Us', path: '/about' },
     { name: 'Get Involved', path: '/get-involved' },
     { name: 'Digital Marketplace', path: '/digital-marketplace' },
-    // hymn book removed from main navigation; it now lives inside marketplace
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -58,13 +57,23 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA Button - Desktop */}
-          <div className="hidden md:block">
-            <Link to="/get-involved">
+          {/* CTA Buttons - Desktop */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link to="/sign-in">
               <Button
-                className="bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold px-8 py-2 rounded-full transition-all duration-300"
+                variant="outline"
+                className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white font-paragraph font-semibold px-6 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
               >
-                Get Involved
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/join">
+              <Button
+                className="bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold px-6 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
+              >
+                <UserPlus className="h-4 w-4" />
+                Join RAYAC
               </Button>
             </Link>
           </div>
@@ -97,13 +106,25 @@ export default function Header() {
                   {link.name}
                 </Link>
               ))}
-              <Link to="/get-involved" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  className="w-full bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold px-6 py-2 rounded-full transition-all duration-300"
-                >
-                  Get Involved
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-3 pt-2">
+                <Link to="/sign-in" onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="w-full border-accent-red text-accent-red hover:bg-accent-red hover:text-white font-paragraph font-semibold px-6 py-2 rounded-full transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/join" onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    className="w-full bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold px-6 py-2 rounded-full transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Join RAYAC
+                  </Button>
+                </Link>
+              </div>
             </div>
           </nav>
         )}

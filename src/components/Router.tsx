@@ -7,6 +7,8 @@ import AboutPage from "@/components/pages/AboutPage";
 import GetInvolvedPage from "@/components/pages/GetInvolvedPage";
 import DigitalMarketplacePage from "@/components/pages/DigitalMarketplacePage";
 import CheckoutPage from "@/components/pages/CheckoutPage";
+import JoinPage from "@/components/pages/JoinPage";
+import SignInPage from "@/components/pages/SignInPage";
 // HymnBookPage is no longer linked from navigation; page file can be removed later
 
 function ErrorPage() {
@@ -39,6 +41,8 @@ const router = createBrowserRouter(
         { path: "get-involved", element: <GetInvolvedPage /> },
         { path: "digital-marketplace", element: <DigitalMarketplacePage /> },
         { path: "checkout", element: <CheckoutPage /> },
+        { path: "join", element: <JoinPage /> },
+        { path: "sign-in", element: <SignInPage /> },
         { path: "*", element: <Navigate to="/" replace /> },
       ],
     },
