@@ -14,6 +14,7 @@ export default function Header() {
     { name: 'About Us', path: '/about' },
     { name: 'Get Involved', path: '/get-involved' },
     { name: 'Digital Marketplace', path: '/digital-marketplace' },
+    { name: 'Members Portal', path: '/portal' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -22,6 +23,7 @@ export default function Header() {
     <header className="w-full bg-black border-b border-accent-red sticky top-0 z-50 shadow-lg">
       <div className="max-w-[120rem] mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex items-center justify-between h-20">
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 md:gap-3">
             <Image
@@ -29,12 +31,13 @@ export default function Header() {
               className="h-10 md:h-12 w-auto"
               width={48}
               originWidth={368}
-              originHeight={356} />
+              originHeight={356}
+            />
             <div className="flex flex-col gap-0.5">
-              <div className="text-xs md:text-sm font-semibold tracking-widest uppercase text-primary-foreground">
+              <div className="text-xs md:text-sm font-semibold tracking-widest text-accent-red uppercase">
                 17th Episcopal
               </div>
-              <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading uppercase">
+              <div className="text-sm md:text-lg font-bold tracking-tight text-primary-foreground font-heading">
                 District
               </div>
             </div>

@@ -9,6 +9,7 @@ import DigitalMarketplacePage from "@/components/pages/DigitalMarketplacePage";
 import CheckoutPage from "@/components/pages/CheckoutPage";
 import JoinPage from "@/components/pages/JoinPage";
 import SignInPage from "@/components/pages/SignInPage";
+import MembersPortalPage from "./pages/MembersPortalPage";
 // HymnBookPage is no longer linked from navigation; page file can be removed later
 
 function ErrorPage() {
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
         { path: "checkout", element: <CheckoutPage /> },
         { path: "join", element: <JoinPage /> },
         { path: "sign-in", element: <SignInPage /> },
+        { path: "portal", element: <MembersPortalPage /> },
         { path: "*", element: <Navigate to="/" replace /> },
       ],
     },

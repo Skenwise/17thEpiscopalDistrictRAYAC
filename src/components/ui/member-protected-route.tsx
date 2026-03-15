@@ -1,52 +1,30 @@
-import { ReactNode, useState, useEffect } from 'react';
-import { SignIn } from '@/components/ui/sign-in';
+import { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useMember } from '@/hooks/useMember';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface MemberProtectedRouteProps {
   children: ReactNode;
-  isAuthenticated?: boolean; // optionally pass in auth state
-  isLoading?: boolean; // optionally pass in loading state
   messageToSignIn?: string;
   messageToLoading?: string;
-  signInTitle?: string;
-  signInClassName?: string;
-  loadingClassName?: string;
 }
 
 export function MemberProtectedRoute({
   children,
-  isAuthenticated = false,
-  isLoading = false,
-  messageToSignIn = "Please sign in to access this page.",
-  messageToLoading = "Loading page...",
-  signInTitle = "Sign In Required",
-  signInClassName = "",
-  loadingClassName = "",
+  messageToLoading = "Loading...",
 }: MemberProtectedRouteProps) {
+  const { member, isLoading } = useMember();
 
-  // Optional: simulate loading state for demo
-  const [loading, setLoading] = useState(isLoading);
-  useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => setLoading(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <LoadingSpinner message={messageToLoading} className={loadingClassName} />
+        <LoadingSpinner message={messageToLoading} />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <SignIn title={signInTitle} message={messageToSignIn} className={signInClassName} />
-      </div>
-    );
+  if (!member) {
+    return <Navigate to="/sign-in?redirect=/portal" replace />;
   }
 
   return <>{children}</>;

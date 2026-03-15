@@ -6,7 +6,6 @@ import { Image } from '@/components/ui/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// Product type
 interface Product {
   _id: string;
   itemName?: string;
@@ -16,13 +15,10 @@ interface Product {
   currency?: string;
 }
 
-// Helper: format price
 const formatPrice = (price: number, currency = 'USD') =>
   `${currency} ${price.toFixed(2)}`;
 
-// Dummy API call placeholder
 const fetchProducts = async (): Promise<Product[]> => {
-  // Replace this with your backend API
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
@@ -31,24 +27,8 @@ const fetchProducts = async (): Promise<Product[]> => {
           itemName: 'Hymn Book',
           itemPrice: 50,
           currency: 'ZMW',
-          itemDescription: 'Full 17th Episcopal District hymnal – one‑time purchase.',
-          itemImage: 'https://via.placeholder.com/400x256',
-        },
-        {
-          _id: '1',
-          itemName: 'Sample Product',
-          itemPrice: 29.99,
-          currency: 'USD',
-          itemDescription: 'This is a sample product.',
-          itemImage: 'https://via.placeholder.com/400x256',
-        },
-        {
-          _id: '2',
-          itemName: 'Another Product',
-          itemPrice: 49.99,
-          currency: 'USD',
-          itemDescription: 'Another example product.',
-          itemImage: 'https://via.placeholder.com/400x256',
+          itemDescription: 'Full 17th Episcopal District hymnal – one‑time purchase. Access all hymns in English and Bemba.',
+          itemImage: '/assets/logo.jpeg',
         },
       ]);
     }, 500);
@@ -58,7 +38,7 @@ const fetchProducts = async (): Promise<Product[]> => {
 export default function DigitalMarketplacePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const currency = 'USD';
+  const currency = 'ZMW';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,7 +55,6 @@ export default function DigitalMarketplacePage() {
 
     loadProducts();
   }, []);
-
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -106,7 +85,7 @@ export default function DigitalMarketplacePage() {
                     />
                   </div>
                 )}
-                
+
                 <div className="p-6">
                   <h2 className="font-heading text-2xl font-bold text-primary mb-2">{product.itemName}</h2>
                   {product.itemDescription && (
@@ -120,7 +99,6 @@ export default function DigitalMarketplacePage() {
 
                     <Button
                       onClick={() => {
-                        // send user to checkout page with item info in query
                         navigate(
                           `/checkout?product=${encodeURIComponent(
                             product.itemName || ''

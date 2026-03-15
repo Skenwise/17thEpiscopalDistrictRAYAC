@@ -26,7 +26,9 @@ export default function SignInPage() {
       window.location.href = 'rayac-hymn://auth-callback';
 
       // Fallback — go to homepage after short delay
-      setTimeout(() => navigate('/'), 1500);
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/';
+setTimeout(() => navigate(redirect), 1500);
     } catch (err: any) {
       switch (err.code) {
         case 'auth/user-not-found':
