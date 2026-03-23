@@ -1,9 +1,50 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Bell, Eye, Shield } from 'lucide-react';
+import { Lock, Bell, Eye, Shield, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export default function SettingsContent() {
+  const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' });
+  const [pwStatus, setPwStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  const [pwError, setPwError] = useState('');
+
+  const handleUpdatePassword = async () => {
+    setPwError('');
+    if (!passwords.current || !passwords.newPass || !passwords.confirm) {
+      setPwError('All fields are required.'); return;
+    }
+    if (passwords.newPass !== passwords.confirm) {
+      setPwError('New passwords do not match.'); return;
+    }
+    if (passwords.newPass.length < 6) {
+      setPwError('Password must be at least 6 characters.'); return;
+    }
+
+    setPwStatus('loading');
+    try {
+      const user = auth.currentUser;
+      if (!user || !user.email) throw new Error('Not authenticated');
+
+      const credential = EmailAuthProvider.credential(user.email, passwords.current);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, passwords.newPass);
+
+      setPwStatus('done');
+      setPasswords({ current: '', newPass: '', confirm: '' });
+      setTimeout(() => setPwStatus('idle'), 3000);
+    } catch (error: any) {
+      if (error.code === 'auth/wrong-password') {
+        setPwError('Current password is incorrect.');
+      } else {
+        setPwError('Failed to update password. Try again.');
+      }
+      setPwStatus('error');
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
@@ -11,33 +52,62 @@ export default function SettingsContent() {
         <p className="text-accent-silver/70">Manage your account and preferences</p>
       </div>
 
+      {/* Account Settings */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
         <h3 className="text-xl font-semibold text-accent-red mb-6 flex items-center gap-2">
-          <Lock className="w-5 h-5" /> Account Settings
+          <Lock className="w-5 h-5" /> Change Password
         </h3>
+
+        {pwStatus === 'done' && (
+          <div className="flex items-center gap-2 text-green-400 mb-4">
+            <CheckCircle className="w-5 h-5" />
+            <span>Password updated successfully!</span>
+          </div>
+        )}
+        {pwError && <p className="text-red-400 text-sm mb-4">{pwError}</p>}
+
         <div className="space-y-4">
           <div>
-            <label className="block text-accent-silver/70 text-sm mb-2">Email Address</label>
-            <Input type="email" placeholder="your.email@example.com" className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg" disabled />
-          </div>
-          <div>
             <label className="block text-accent-silver/70 text-sm mb-2">Current Password</label>
-            <Input type="password" placeholder="••••••••" className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg" />
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={passwords.current}
+              onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+              className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg"
+            />
           </div>
           <div>
             <label className="block text-accent-silver/70 text-sm mb-2">New Password</label>
-            <Input type="password" placeholder="••••••••" className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg" />
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={passwords.newPass}
+              onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
+              className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg"
+            />
           </div>
           <div>
-            <label className="block text-accent-silver/70 text-sm mb-2">Confirm Password</label>
-            <Input type="password" placeholder="••••••••" className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg" />
+            <label className="block text-accent-silver/70 text-sm mb-2">Confirm New Password</label>
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={passwords.confirm}
+              onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+              className="bg-slate-700 border-primary/30 text-accent-silver placeholder:text-accent-silver/50 rounded-lg"
+            />
           </div>
-          <Button className="bg-accent-red hover:bg-accent-red/90 text-white font-semibold rounded-lg px-6 py-2 transition-all">
-            Update Password
+          <Button
+            onClick={handleUpdatePassword}
+            disabled={pwStatus === 'loading'}
+            className="bg-accent-red hover:bg-accent-red/90 disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-2 transition-all"
+          >
+            {pwStatus === 'loading' ? 'Updating...' : 'Update Password'}
           </Button>
         </div>
       </div>
 
+      {/* Notification Preferences */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
         <h3 className="text-xl font-semibold text-accent-red mb-6 flex items-center gap-2">
           <Bell className="w-5 h-5" /> Notification Preferences
@@ -61,6 +131,7 @@ export default function SettingsContent() {
         </div>
       </div>
 
+      {/* Privacy Settings */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
         <h3 className="text-xl font-semibold text-accent-red mb-6 flex items-center gap-2">
           <Shield className="w-5 h-5" /> Privacy Settings
@@ -82,6 +153,7 @@ export default function SettingsContent() {
         </div>
       </div>
 
+      {/* Two-Factor Authentication */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
         <h3 className="text-xl font-semibold text-accent-red mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" /> Two-Factor Authentication
@@ -92,6 +164,7 @@ export default function SettingsContent() {
         </Button>
       </div>
 
+      {/* Danger Zone */}
       <div className="bg-gradient-to-br from-red-950/30 to-red-900/10 border border-red-500/30 rounded-xl p-6">
         <h3 className="text-xl font-semibold text-red-400 mb-4">Danger Zone</h3>
         <p className="text-accent-silver/70 text-sm mb-4">These actions cannot be undone. Please proceed with caution.</p>

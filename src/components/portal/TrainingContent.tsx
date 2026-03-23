@@ -1,14 +1,48 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Users, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useMember } from '@/hooks/useMember';
+import { sendNotification } from '@/lib/notifications';
 
 export default function TrainingContent() {
+  const { member } = useMember();
+  const [enrollStatus, setEnrollStatus] = useState<Record<number, 'loading' | 'done' | 'error'>>({});
+
   const trainings = [
     { id: 1, title: 'Youth Leadership Fundamentals', description: 'Learn the basics of effective youth leadership', duration: '4 weeks', level: 'Beginner', participants: 32, status: 'ongoing', progress: 60 },
     { id: 2, title: 'Conflict Resolution Skills', description: 'Master techniques for resolving conflicts peacefully', duration: '2 weeks', level: 'Intermediate', participants: 18, status: 'upcoming', progress: 0 },
     { id: 3, title: 'Public Speaking Mastery', description: 'Develop confidence and skills in public speaking', duration: '3 weeks', level: 'Intermediate', participants: 25, status: 'upcoming', progress: 0 },
     { id: 4, title: 'Event Management Excellence', description: 'Plan and execute successful events', duration: '5 weeks', level: 'Advanced', participants: 15, status: 'completed', progress: 100 },
   ];
+
+  const handleEnroll = async (training: typeof trainings[0]) => {
+    if (!member) return;
+    setEnrollStatus(prev => ({ ...prev, [training.id]: 'loading' }));
+    try {
+      await addDoc(collection(db, 'training_enrollments'), {
+        userId: member.userId,
+        userEmail: member.email,
+        userName: member.displayName,
+        trainingId: training.id,
+        trainingTitle: training.title,
+        trainingLevel: training.level,
+        createdAt: serverTimestamp(),
+      });
+      await sendNotification(
+        member.userId,
+        'training',
+        `Enrollment Confirmed: ${training.title}`,
+        `You have successfully enrolled in ${training.title} (${training.level}).`
+      );
+      setEnrollStatus(prev => ({ ...prev, [training.id]: 'done' }));
+    } catch (error) {
+      console.error('Enrollment failed:', error);
+      setEnrollStatus(prev => ({ ...prev, [training.id]: 'error' }));
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -66,14 +100,26 @@ export default function TrainingContent() {
                   <div className="flex items-center gap-2 text-green-400 font-semibold">
                     <CheckCircle className="w-5 h-5" /> Completed
                   </div>
-                ) : training.status === 'ongoing' ? (
-                  <Button className="bg-accent-red hover:bg-accent-red/90 text-white font-semibold rounded-lg py-2 transition-all">
-                    Continue
-                  </Button>
+                ) : enrollStatus[training.id] === 'done' ? (
+                  <div className="flex items-center gap-2 text-green-400 font-semibold justify-center">
+                    <CheckCircle className="w-5 h-5" />
+                    Enrolled!
+                  </div>
                 ) : (
-                  <Button className="bg-primary/30 hover:bg-primary/50 text-accent-red border border-primary/50 rounded-lg py-2 transition-all">
-                    Enroll
+                  <Button
+                    onClick={() => handleEnroll(training)}
+                    disabled={enrollStatus[training.id] === 'loading'}
+                    className={`font-semibold rounded-lg py-2 transition-all disabled:opacity-60 ${
+                      training.status === 'ongoing'
+                        ? 'bg-accent-red hover:bg-accent-red/90 text-white'
+                        : 'bg-primary/30 hover:bg-primary/50 text-accent-red border border-primary/50'
+                    }`}
+                  >
+                    {enrollStatus[training.id] === 'loading' ? 'Saving...' : training.status === 'ongoing' ? 'Continue' : 'Enroll'}
                   </Button>
+                )}
+                {enrollStatus[training.id] === 'error' && (
+                  <p className="text-red-400 text-xs text-center">Failed. Try again.</p>
                 )}
               </div>
             </div>

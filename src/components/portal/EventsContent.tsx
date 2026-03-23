@@ -1,50 +1,50 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useMember } from '@/hooks/useMember';
+import { sendNotification } from '@/lib/notifications';
 
 export default function EventsContent() {
+  const { member } = useMember();
+  const [rsvpStatus, setRsvpStatus] = useState<Record<number, 'loading' | 'done' | 'error'>>({});
+
   const events = [
-    {
-      id: 1,
-      title: 'Youth Leadership Retreat',
-      date: 'March 15-17, 2026',
-      time: '9:00 AM - 5:00 PM',
-      location: 'RAYAC Conference Center',
-      attendees: 45,
-      description: 'An exclusive retreat for young leaders to develop skills and connect with peers.',
-      month: 'Mar',
-      day: '15',
-    },
-    {
-      id: 2,
-      title: 'RAYAC Convention 2026',
-      date: 'April 15-18, 2026',
-      time: 'All Day',
-      location: 'Main Auditorium',
-      attendees: 200,
-      description: 'Annual convention featuring inspiring speakers, workshops, and networking.',
-      month: 'Apr',
-      day: '15',
-    },
-    {
-      id: 3,
-      title: 'Training Workshop',
-      date: 'March 22, 2026',
-      time: '2:00 PM - 4:00 PM',
-      location: 'Training Room A',
-      attendees: 30,
-      description: 'Professional development workshop for all members.',
-      month: 'Mar',
-      day: '22',
-    },
+    { id: 1, title: 'Youth Leadership Retreat', date: 'March 15-17, 2026', time: '9:00 AM - 5:00 PM', location: 'RAYAC Conference Center', attendees: 45, description: 'An exclusive retreat for young leaders to develop skills and connect with peers.', month: 'Mar', day: '15' },
+    { id: 2, title: 'RAYAC Convention 2026', date: 'April 15-18, 2026', time: 'All Day', location: 'Main Auditorium', attendees: 200, description: 'Annual convention featuring inspiring speakers, workshops, and networking.', month: 'Apr', day: '15' },
+    { id: 3, title: 'Training Workshop', date: 'March 22, 2026', time: '2:00 PM - 4:00 PM', location: 'Training Room A', attendees: 30, description: 'Professional development workshop for all members.', month: 'Mar', day: '22' },
   ];
 
+  const handleRSVP = async (event: typeof events[0]) => {
+    if (!member) return;
+    setRsvpStatus(prev => ({ ...prev, [event.id]: 'loading' }));
+    try {
+      await addDoc(collection(db, 'rsvps'), {
+        userId: member.userId,
+        userEmail: member.email,
+        userName: member.displayName,
+        eventId: event.id,
+        eventTitle: event.title,
+        eventDate: event.date,
+        createdAt: serverTimestamp(),
+      });
+      await sendNotification(
+        member.userId,
+        'rsvp',
+        `RSVP Confirmed: ${event.title}`,
+        `You have successfully RSVP'd for ${event.title} on ${event.date}.`
+      );
+      setRsvpStatus(prev => ({ ...prev, [event.id]: 'done' }));
+    } catch (error) {
+      console.error('RSVP failed:', error);
+      setRsvpStatus(prev => ({ ...prev, [event.id]: 'error' }));
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold font-heading text-accent-red mb-2">Events</h2>
         <p className="text-accent-silver/70">Discover and register for upcoming RAYAC events</p>
@@ -87,9 +87,23 @@ export default function EventsContent() {
               </div>
 
               <div className="flex flex-col justify-center gap-2">
-                <Button className="bg-accent-red hover:bg-accent-red/90 text-white font-semibold rounded-lg py-2 transition-all">
-                  RSVP
-                </Button>
+                {rsvpStatus[event.id] === 'done' ? (
+                  <div className="flex items-center gap-2 text-green-400 font-semibold justify-center">
+                    <CheckCircle className="w-5 h-5" />
+                    RSVP'd!
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => handleRSVP(event)}
+                    disabled={rsvpStatus[event.id] === 'loading'}
+                    className="bg-accent-red hover:bg-accent-red/90 text-white font-semibold rounded-lg py-2 transition-all disabled:opacity-60"
+                  >
+                    {rsvpStatus[event.id] === 'loading' ? 'Saving...' : 'RSVP'}
+                  </Button>
+                )}
+                {rsvpStatus[event.id] === 'error' && (
+                  <p className="text-red-400 text-xs text-center">Failed. Try again.</p>
+                )}
                 <Button variant="outline" className="border-primary/50 text-accent-red hover:bg-primary/10 rounded-lg py-2">
                   Details
                 </Button>

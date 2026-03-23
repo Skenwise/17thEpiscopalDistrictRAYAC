@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useMember } from '@/hooks/useMember';
 import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 import PortalLayout from '@/components/PortalLayout';
 import DashboardContent from '@/components/portal/DashboardContent';
@@ -24,7 +23,7 @@ function MembersPortalContent() {
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'dashboard': return <DashboardContent />;
+      case 'dashboard': return <DashboardContent onSectionChange={setActiveSection} />;
       case 'profile': return <ProfileContent />;
       case 'events': return <EventsContent />;
       case 'directory': return <DirectoryContent />;
@@ -38,7 +37,7 @@ function MembersPortalContent() {
       case 'notifications': return <NotificationsContent />;
       case 'store': return <StoreContent />;
       case 'settings': return <SettingsContent />;
-      default: return <DashboardContent />;
+      default: return <DashboardContent onSectionChange={setActiveSection} />;
     }
   };
 

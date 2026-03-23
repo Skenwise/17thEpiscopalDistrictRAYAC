@@ -72,7 +72,6 @@ const StaggerContainer = ({ children, className = "" }: { children: React.ReactN
           }
         }
       }}
-      className={className}
       className="bg-accent-silver">
       {children}
     </motion.div>
