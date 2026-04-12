@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { collection, addDoc, getDocs, serverTimestamp, orderBy, query } from 'firebase/firestore';
@@ -70,7 +70,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
         setFeaturedEvents(all.filter(e => e.featured));
         setUpcomingEvents(all.slice(0, 3));
       } catch (error) {
-        console.error(error);
+        console.error('Failed to fetch events:', error);
       } finally {
         setIsLoadingEvents(false);
       }
@@ -82,7 +82,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
         const snap = await getDocs(q);
         setResources(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Resource)).slice(0, 4));
       } catch (error) {
-        console.error(error);
+        console.error('Failed to fetch resources:', error);
       } finally {
         setIsLoadingResources(false);
       }
@@ -136,7 +136,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
         member.userId,
         'rsvp',
         `RSVP Confirmed: ${event.title}`,
-        'You have successfully RSVP\'d for ${event.title} on ${event.date}.'
+        `You have successfully RSVP'd for ${event.title} on ${event.date}.`
       );
       setRsvpStatus(prev => ({ ...prev, [event.id]: 'done' }));
     } catch {
@@ -159,19 +159,19 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
 
   const quickActions = [
     { id: 1, title: 'Submit Prayer Request', description: 'Share your prayer needs with the community', icon: <Heart className="w-6 h-6" />, color: 'from-destructive/20 to-destructive/5', borderColor: 'border-destructive/30', onClick: () => setShowPrayerModal(true) },
-    { id: 2, title: 'Give Offering', description: 'Support RAYAC ministries and programs', icon: <Heart className="w-6 h-6" />, color: 'from-primary/20 to-primary/5', borderColor: 'border-primary/30', onClick: () => window.location.href = '/checkout?product=Offering&price=50&currency=ZMW' },
+    { id: 2, title: 'Give Offering', description: 'Support RAYAC ministries and programs with any amount', icon: <Heart className="w-6 h-6" />, color: 'from-primary/20 to-primary/5', borderColor: 'border-primary/30', onClick: () => window.location.href = '/offering?fund=General%20Offering' },
     { id: 3, title: 'View Directory', description: 'Connect with other members', icon: <Users className="w-6 h-6" />, color: 'from-accent-red/20 to-accent-red/5', borderColor: 'border-accent-red/30', onClick: () => onSectionChange?.('directory') },
     { id: 4, title: 'Join Training', description: 'Enroll in upcoming training programs', icon: <Zap className="w-6 h-6" />, color: 'from-yellow-500/20 to-yellow-500/5', borderColor: 'border-yellow-500/30', onClick: () => onSectionChange?.('training') },
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
   };
 
   const displayFeatured = featuredEvents.length > 0 ? featuredEvents : [

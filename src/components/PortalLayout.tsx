@@ -5,7 +5,6 @@ import { Menu } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import PortalHeader from '@/components/portal/PortalHeader';
 import PortalSidebar from '@/components/portal/PortalSidebar';
 
 type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
@@ -46,19 +45,10 @@ export default function PortalLayout({ children, activeSection, onSectionChange 
         />
 
         <div className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex items-center gap-4 bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700 px-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 text-primary-foreground/70 hover:text-accent-red transition-colors"
-            >
+          <div className="lg:hidden p-4">
+            <button onClick={() => setSidebarOpen(true)} className="p-2 text-primary-foreground/70 hover:text-accent-red transition-colors bg-slate-800 rounded-lg">
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex-1">
-              <PortalHeader
-                memberName={member?.displayName || member?.email || 'Member'}
-                onSectionChange={onSectionChange}
-              />
-            </div>
           </div>
 
           <main className="flex-1 overflow-auto w-full">
