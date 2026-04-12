@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
 interface PortalSidebarProps {
   activeSection: PortalSection;
@@ -26,7 +25,6 @@ const menuItems: Array<{ id: PortalSection; label: string; icon: React.ReactNode
   { id: 'training', label: 'Training', icon: <Zap className="w-5 h-5" /> },
   { id: 'giving', label: 'Giving', icon: <Heart className="w-5 h-5" /> },
   { id: 'volunteer', label: 'Volunteer', icon: <Handshake className="w-5 h-5" /> },
-  { id: 'reports', label: 'Reports', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'forum', label: 'Community Forum', icon: <MessageCircle className="w-5 h-5" /> },
   { id: 'media', label: 'Media', icon: <ImageIcon className="w-5 h-5" /> },
   { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },

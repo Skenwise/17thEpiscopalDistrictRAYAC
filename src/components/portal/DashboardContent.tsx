@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock } from 'lucide-react';
+import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock, Shield } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { collection, addDoc, getDocs, serverTimestamp, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useMember } from '@/hooks/useMember';
+import { useAdmin } from '@/hooks/useAdmin';
 import { sendNotification } from '@/lib/notifications';
+import { Link } from 'react-router-dom';
 
 type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
@@ -36,6 +38,7 @@ interface Resource {
 
 export default function DashboardContent({ onSectionChange }: DashboardProps) {
   const { member } = useMember();
+  const { isAdmin } = useAdmin();
   const galleryScrollRef = useRef<HTMLDivElement>(null);
 
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
@@ -159,7 +162,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
 
   const quickActions = [
     { id: 1, title: 'Submit Prayer Request', description: 'Share your prayer needs with the community', icon: <Heart className="w-6 h-6" />, color: 'from-destructive/20 to-destructive/5', borderColor: 'border-destructive/30', onClick: () => setShowPrayerModal(true) },
-    { id: 2, title: 'Give Offering', description: 'Support RAYAC ministries and programs with any amount', icon: <Heart className="w-6 h-6" />, color: 'from-primary/20 to-primary/5', borderColor: 'border-primary/30', onClick: () => window.location.href = '/offering?fund=General%20Offering' },
+    { id: 2, title: 'Give Offering', description: 'Support RAYAC ministries and programs with any amount', icon: <Heart className="w-6 h-6" />, color: 'from-primary/20 to-primary/5', borderColor: 'border-primary/30', onClick: () => onSectionChange?.('giving') },
     { id: 3, title: 'View Directory', description: 'Connect with other members', icon: <Users className="w-6 h-6" />, color: 'from-accent-red/20 to-accent-red/5', borderColor: 'border-accent-red/30', onClick: () => onSectionChange?.('directory') },
     { id: 4, title: 'Join Training', description: 'Enroll in upcoming training programs', icon: <Zap className="w-6 h-6" />, color: 'from-yellow-500/20 to-yellow-500/5', borderColor: 'border-yellow-500/30', onClick: () => onSectionChange?.('training') },
   ];
@@ -174,19 +177,24 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
   };
 
-  const displayFeatured = featuredEvents.length > 0 ? featuredEvents : [
-    { id: 'default-1', title: 'RAYAC Convention 2026', date: 'April 15-18, 2026', month: 'Apr', day: '15', description: 'Join us for the annual RAYAC Convention featuring inspiring speakers, workshops, and networking opportunities.', image: 'https://static.wixstatic.com/media/20287c_ff1f2f16447946158d9c326c21b96cab~mv2.png?originWidth=384&originHeight=256', cta: 'Register Now', featured: true, location: 'Main Auditorium', time: 'All Day' },
-    { id: 'default-2', title: 'Youth Leadership Retreat', date: 'March 15-17, 2026', month: 'Mar', day: '15', description: 'An exclusive retreat for young leaders to develop skills and connect with peers.', image: 'https://static.wixstatic.com/media/20287c_d90e8253a60140f784dc114ebde2755d~mv2.png?originWidth=384&originHeight=256', cta: 'Learn More', featured: true, location: 'RAYAC Conference Center', time: '9:00 AM - 5:00 PM' },
-  ];
-
-  const displayUpcoming = upcomingEvents.length > 0 ? upcomingEvents : [
-    { id: 'u1', title: 'Youth Leadership Retreat', date: 'March 15', month: 'Mar', day: '15', description: 'An exclusive retreat for young leaders.', image: '', cta: '', featured: false, location: 'RAYAC Conference Center', time: '9:00 AM' },
-    { id: 'u2', title: 'RAYAC Convention 2026', date: 'April 15', month: 'Apr', day: '15', description: 'Annual RAYAC Convention.', image: '', cta: '', featured: false, location: 'Main Auditorium', time: 'All Day' },
-    { id: 'u3', title: 'Training Workshop', date: 'March 22', month: 'Mar', day: '22', description: 'Professional development workshop.', image: '', cta: '', featured: false, location: 'Training Room A', time: '2:00 PM' },
-  ];
+  const displayFeatured = featuredEvents;
+  const displayUpcoming = upcomingEvents;
 
   return (
     <motion.div className="space-y-10" variants={containerVariants} initial="hidden" animate="visible">
+
+      {/* Admin Button in Top Right */}
+      {isAdmin && (
+        <div className="flex justify-end">
+          <Link
+            to="/admin"
+            className="flex items-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white px-4 py-2 rounded-lg transition-all shadow-lg"
+          >
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-semibold">Admin Panel</span>
+          </Link>
+        </div>
+      )}
 
       {/* Featured Announcement Carousel */}
       <motion.div
@@ -197,11 +205,13 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
 
         {isLoadingEvents ? (
           <div className="p-12 text-center text-slate-400">Loading events...</div>
+        ) : displayFeatured.length === 0 ? (
+          <div className="p-12 text-center text-slate-400">No featured events available.</div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-8 p-8 lg:p-12 relative z-10">
             <motion.div className="relative h-72 lg:h-96 rounded-2xl overflow-hidden shadow-2xl" whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}>
               {displayFeatured[currentAnnouncement]?.image ? (
-                <Image src={displayFeatured[currentAnnouncement].image} alt={displayFeatured[currentAnnouncement].title} className="w-full h-full object-cover" width={400} originWidth={400} originHeight={300} />
+                <img src={displayFeatured[currentAnnouncement].image} alt={displayFeatured[currentAnnouncement].title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-slate-700 flex items-center justify-center">
                   <Calendar className="w-16 h-16 text-slate-500" />
@@ -304,49 +314,57 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
             <Calendar className="w-6 h-6 text-accent-red" />
           </motion.div>
         </div>
-        <motion.div className="grid md:grid-cols-3 gap-5" variants={containerVariants}>
-          {displayUpcoming.map((event) => (
-            <motion.div
-              key={event.id}
-              variants={itemVariants}
-              whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(200, 16, 46, 0.15)' }}
-              className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-600 rounded-2xl p-6 hover:border-accent-red/50 transition-all group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="bg-gradient-to-br from-primary via-primary to-accent-red rounded-xl p-4 text-white shadow-lg">
-                  <p className="text-xs font-bold uppercase tracking-wider">{event.month}</p>
-                  <p className="text-3xl font-bold">{event.day}</p>
-                </motion.div>
-                <button
-                  onClick={() => handleShowDetails(event)}
-                  className="text-xs text-accent-red/70 hover:text-accent-red font-semibold border border-accent-red/30 hover:border-accent-red px-2 py-1 rounded-lg transition-all"
-                >
-                  Details
-                </button>
-              </div>
-              <h4 className="font-bold text-primary-foreground mb-2 text-lg">{event.title}</h4>
-              {event.location && (
-                <div className="flex items-center gap-1 text-slate-400 text-xs mb-4">
-                  <MapPin className="w-3 h-3" />
-                  <span>{event.location}</span>
+        {displayUpcoming.length === 0 ? (
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center">
+            <Calendar className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-slate-400">No upcoming events scheduled.</p>
+            <p className="text-slate-500 text-sm mt-1">Check back later for new events.</p>
+          </div>
+        ) : (
+          <motion.div className="grid md:grid-cols-3 gap-5" variants={containerVariants}>
+            {displayUpcoming.map((event) => (
+              <motion.div
+                key={event.id}
+                variants={itemVariants}
+                whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(200, 16, 46, 0.15)' }}
+                className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-600 rounded-2xl p-6 hover:border-accent-red/50 transition-all group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="bg-gradient-to-br from-primary via-primary to-accent-red rounded-xl p-4 text-white shadow-lg">
+                    <p className="text-xs font-bold uppercase tracking-wider">{event.month}</p>
+                    <p className="text-3xl font-bold">{event.day}</p>
+                  </motion.div>
+                  <button
+                    onClick={() => handleShowDetails(event)}
+                    className="text-xs text-accent-red/70 hover:text-accent-red font-semibold border border-accent-red/30 hover:border-accent-red px-2 py-1 rounded-lg transition-all"
+                  >
+                    Details
+                  </button>
                 </div>
-              )}
-              {rsvpStatus[event.id] === 'done' ? (
-                <div className="w-full text-center text-green-400 font-semibold py-2">✓ RSVP'd!</div>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleRSVP(event)}
-                  disabled={rsvpStatus[event.id] === 'loading'}
-                  className="w-full bg-gradient-to-r from-primary/20 to-accent-red/20 hover:from-primary/30 hover:to-accent-red/30 text-primary-foreground border-2 border-primary/50 rounded-xl py-2.5 font-bold transition-all disabled:opacity-60"
-                >
-                  {rsvpStatus[event.id] === 'loading' ? 'Saving...' : 'RSVP'}
-                </motion.button>
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
+                <h4 className="font-bold text-primary-foreground mb-2 text-lg">{event.title}</h4>
+                {event.location && (
+                  <div className="flex items-center gap-1 text-slate-400 text-xs mb-4">
+                    <MapPin className="w-3 h-3" />
+                    <span>{event.location}</span>
+                  </div>
+                )}
+                {rsvpStatus[event.id] === 'done' ? (
+                  <div className="w-full text-center text-green-400 font-semibold py-2">✓ RSVP'd!</div>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleRSVP(event)}
+                    disabled={rsvpStatus[event.id] === 'loading'}
+                    className="w-full bg-gradient-to-r from-primary/20 to-accent-red/20 hover:from-primary/30 hover:to-accent-red/30 text-primary-foreground border-2 border-primary/50 rounded-xl py-2.5 font-bold transition-all disabled:opacity-60"
+                  >
+                    {rsvpStatus[event.id] === 'loading' ? 'Saving...' : 'RSVP'}
+                  </motion.button>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Media Gallery */}
@@ -361,7 +379,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
           <div ref={galleryScrollRef} className="flex gap-5 overflow-x-auto pb-4 scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
             {galleryImages.map((item) => (
               <motion.div key={item.id} variants={itemVariants} whileHover={{ scale: 1.05 }} className="flex-shrink-0 w-64 h-48 rounded-2xl overflow-hidden border-2 border-slate-600 hover:border-accent-red/50 transition-all cursor-pointer group/item relative">
-                <Image src={item.image} alt={item.title} className="w-full h-full object-cover" width={256} originWidth={256} originHeight={192} />
+                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 <motion.div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex items-end p-4" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}>
                   <p className="text-primary-foreground font-bold text-sm">{item.title}</p>
                 </motion.div>
@@ -443,7 +461,7 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-800 border border-accent-red/30 rounded-2xl w-full max-w-lg overflow-hidden">
             {selectedEvent.image && (
               <div className="relative h-48 overflow-hidden">
-                <Image src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" width={500} originWidth={500} originHeight={300} />
+                <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-800 via-slate-800/20 to-transparent" />
               </div>
             )}

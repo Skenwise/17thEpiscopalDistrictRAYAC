@@ -15,18 +15,31 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const isExpoGo = () => {
+    return navigator.userAgent.includes('Expo') || 
+           window.location.hostname === 'exp.host' ||
+           window.location.href.includes('exp://');
+  };
+
   const redirectToApp = () => {
+    // For Expo Go, just show message and let user manually return
+    if (isExpoGo()) {
+      // Show a visible message on the page
+      const msg = document.createElement('div');
+      msg.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50 text-center';
+      msg.innerHTML = '✅ Sign in successful!<br/>Please manually switch back to the AME Church Hymn Book app.';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 5000);
+      // Don't redirect, stay on page
+      return;
+    }
+    
     const isAndroid = /android/i.test(navigator.userAgent);
     if (isAndroid) {
       window.location.href = 'intent://auth-callback#Intent;scheme=rayac-hymn;package=app.rork.ame_church_hymn_book;end';
     } else {
       window.location.href = 'rayac-hymn://auth-callback';
     }
-    setTimeout(() => {
-      if (window.location.href.includes('sign-in')) {
-        alert("If the app doesn't open automatically, please open the AME Church Hymn Book app manually.");
-      }
-    }, 2000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, Calendar, CheckCircle, Clock, XCircle, ExternalLink } from 'lucide-react';
+import { DollarSign, Calendar, CheckCircle, Clock, XCircle, PlusCircle, History } from 'lucide-react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useMember } from '@/hooks/useMember';
+import OfferingForm from './OfferingForm';
 
 interface Payment {
   id: string;
@@ -22,6 +23,7 @@ export default function GivingContent() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalGiven, setTotalGiven] = useState(0);
+  const [showForm, setShowForm] = useState(false);
   const [stats, setStats] = useState({
     totalTransactions: 0,
     successfulPayments: 0,
@@ -117,13 +119,40 @@ export default function GivingContent() {
     );
   }
 
+  if (showForm) {
+    return (
+      <div>
+        <button
+          onClick={() => setShowForm(false)}
+          className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+        >
+          ← Back to Giving History
+        </button>
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
+          <h2 className="text-2xl font-bold text-white mb-6">Make an Offering</h2>
+          <OfferingForm onSuccess={() => { setShowForm(false); fetchPaymentHistory(); }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold font-heading text-accent-red mb-2">Giving History</h2>
-        <p className="text-accent-silver/70">Track your contributions and payments</p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold font-heading text-accent-red mb-2">Giving History</h2>
+          <p className="text-accent-silver/70">Track your contributions and payments</p>
+        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white font-semibold px-6 py-3 rounded-xl transition-all"
+        >
+          <PlusCircle className="w-5 h-5" />
+          Make New Offering
+        </button>
       </div>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2"><DollarSign className="w-6 h-6 text-green-400" /><h3 className="text-slate-400 text-sm">Total Given</h3></div>
@@ -139,17 +168,33 @@ export default function GivingContent() {
         </div>
       </div>
 
+      {/* Payment History Table */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-700"><h3 className="text-white font-semibold flex items-center gap-2"><Calendar className="w-5 h-5 text-accent-red" />Transaction History</h3></div>
+        <div className="px-6 py-4 border-b border-slate-700">
+          <h3 className="text-white font-semibold flex items-center gap-2">
+            <History className="w-5 h-5 text-accent-red" />
+            Transaction History
+          </h3>
+        </div>
 
         {!member ? (
-          <div className="text-center py-12"><DollarSign className="w-16 h-16 text-slate-600 mx-auto mb-4" /><p className="text-slate-400">Please sign in to view your giving history.</p><button onClick={() => window.location.href = '/sign-in'} className="mt-4 bg-accent-red hover:bg-accent-red/90 text-white px-6 py-2 rounded-lg">Sign In</button></div>
+          <div className="text-center py-12">
+            <DollarSign className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-400">Please sign in to view your giving history.</p>
+            <button onClick={() => window.location.href = '/sign-in'} className="mt-4 bg-accent-red hover:bg-accent-red/90 text-white px-6 py-2 rounded-lg">Sign In</button>
+          </div>
         ) : payments.length === 0 ? (
-          <div className="text-center py-12"><DollarSign className="w-16 h-16 text-slate-600 mx-auto mb-4" /><p className="text-slate-400">No transactions yet.</p><p className="text-slate-500 text-sm mt-2">Your payment history will appear here once you make a purchase or contribution.</p></div>
+          <div className="text-center py-12">
+            <DollarSign className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-400">No transactions yet.</p>
+            <button onClick={() => setShowForm(true)} className="mt-4 bg-accent-red hover:bg-accent-red/90 text-white px-6 py-2 rounded-lg">Make Your First Offering</button>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-700/50"><tr><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Date</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Item</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Type</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Amount</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Status</th></tr></thead>
+              <thead className="bg-slate-700/50">
+                <tr><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Date</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Item</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Type</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Amount</th><th className="px-6 py-3 text-left text-xs font-medium text-slate-400">Status</th></tr>
+              </thead>
               <tbody className="divide-y divide-slate-700">
                 {payments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-slate-700/50 transition-colors">
@@ -166,7 +211,11 @@ export default function GivingContent() {
         )}
       </div>
 
-      {member && payments.length > 0 && (<div className="flex justify-end"><button onClick={fetchPaymentHistory} className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm">Refresh History</button></div>)}
+      {member && payments.length > 0 && (
+        <div className="flex justify-end">
+          <button onClick={fetchPaymentHistory} className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm">Refresh History</button>
+        </div>
+      )}
     </motion.div>
   );
 }

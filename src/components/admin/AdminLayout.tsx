@@ -5,10 +5,11 @@ import { useAdmin } from '@/hooks/useAdmin';
 import {
   LayoutDashboard, Users, Calendar, BookOpen, Handshake, Download,
   Heart, Shield, LogOut, Menu, ShoppingBag, GraduationCap, MessageCircle,
+  BarChart3,
 } from 'lucide-react';
 import { useState } from 'react';
 
-type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'events' | 'prayers' | 'admins' | 'trainings' | 'volunteer' | 'store' | 'forum';
+type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'events' | 'prayers' | 'admins' | 'trainings' | 'volunteer' | 'store' | 'forum' | 'reports';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const menuItems = [
   { id: 'volunteers' as AdminSection, label: 'Volunteer Applications', icon: <Handshake className="w-5 h-5" /> },
   { id: 'resources' as AdminSection, label: 'Resources', icon: <Download className="w-5 h-5" /> },
   { id: 'prayers' as AdminSection, label: 'Prayer Requests', icon: <Heart className="w-5 h-5" /> },
+  { id: 'reports' as AdminSection, label: 'Reports', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'admins' as AdminSection, label: 'Manage Admins', icon: <Shield className="w-5 h-5" /> },
 ];
 
