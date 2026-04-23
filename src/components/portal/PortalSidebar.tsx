@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   User, Calendar, Users, BookOpen, Zap, Heart, Handshake,
   BarChart3, MessageCircle, Image as ImageIcon, Bell, ShoppingBag,
-  Settings, LogOut, Home,
+  Settings, LogOut, Home, GraduationCap,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+// FIXED: Define PortalSection type
+type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'myLearnings' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
 interface PortalSidebarProps {
   activeSection: PortalSection;
@@ -22,7 +24,8 @@ const menuItems: Array<{ id: PortalSection; label: string; icon: React.ReactNode
   { id: 'events', label: 'Events', icon: <Calendar className="w-5 h-5" /> },
   { id: 'directory', label: 'Members Directory', icon: <Users className="w-5 h-5" /> },
   { id: 'resources', label: 'Resources', icon: <BookOpen className="w-5 h-5" /> },
-  { id: 'training', label: 'Training', icon: <Zap className="w-5 h-5" /> },
+  { id: 'training', label: 'Training Programs', icon: <Zap className="w-5 h-5" /> },
+  { id: 'myLearnings', label: 'My Learnings', icon: <GraduationCap className="w-5 h-5" /> }, // NEW E-LEARNING SECTION
   { id: 'giving', label: 'Giving', icon: <Heart className="w-5 h-5" /> },
   { id: 'volunteer', label: 'Volunteer', icon: <Handshake className="w-5 h-5" /> },
   { id: 'forum', label: 'Community Forum', icon: <MessageCircle className="w-5 h-5" /> },

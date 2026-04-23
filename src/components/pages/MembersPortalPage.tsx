@@ -7,6 +7,7 @@ import EventsContent from '@/components/portal/EventsContent';
 import DirectoryContent from '@/components/portal/DirectoryContent';
 import ResourcesContent from '@/components/portal/ResourcesContent';
 import TrainingContent from '@/components/portal/TrainingContent';
+import MyLearningsContent from '@/components/portal/MyLearnings'; // NEW IMPORT
 import GivingContent from '@/components/portal/GivingContent';
 import VolunteerContent from '@/components/portal/VolunteerContent';
 import ReportsContent from '@/components/portal/ReportsContent';
@@ -16,7 +17,8 @@ import NotificationsContent from '@/components/portal/NotificationsContent';
 import StoreContent from '@/components/portal/StoreContent';
 import SettingsContent from '@/components/portal/SettingsContent';
 
-type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
+// UPDATED: Added 'myLearnings' to the type
+type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'myLearnings' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
 function MembersPortalContent() {
   const [activeSection, setActiveSection] = useState<PortalSection>('dashboard');
@@ -29,6 +31,7 @@ function MembersPortalContent() {
       case 'directory': return <DirectoryContent />;
       case 'resources': return <ResourcesContent />;
       case 'training': return <TrainingContent />;
+      case 'myLearnings': return <MyLearningsContent />; // NEW CASE
       case 'giving': return <GivingContent />;
       case 'volunteer': return <VolunteerContent />;
       case 'reports': return <ReportsContent />;

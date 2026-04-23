@@ -17,8 +17,9 @@ import VolunteerAdmin from '@/components/admin/VolunteerAdmin';
 import StoreAdmin from '@/components/admin/StoreAdmin';
 import ForumAdmin from '@/components/admin/ForumAdmin';
 import ReportsAdmin from '@/components/admin/ReportsAdmin';
+import MediaGalleryAdmin from '@/components/admin/MediaGalleryAdmin';
 
-type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'prayers' | 'admins' | 'events' | 'trainings' | 'volunteer' | 'store' | 'forum' | 'reports';
+type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'prayers' | 'admins' | 'events' | 'trainings' | 'volunteer' | 'store' | 'forum' | 'reports' | 'gallery';
 
 export default function AdminPage() {
   const { isAdmin, isLoading } = useAdmin();
@@ -48,6 +49,7 @@ export default function AdminPage() {
       case 'store': return <StoreAdmin />;
       case 'forum': return <ForumAdmin />;
       case 'reports': return <ReportsAdmin />;
+      case 'gallery': return <MediaGalleryAdmin />;
       default: return <AdminDashboard />;
     }
   };

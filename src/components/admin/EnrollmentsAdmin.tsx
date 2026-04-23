@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, updateDoc, doc, orderBy, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Trash2, Download, Search, Mail, CheckCircle, Square, CheckSquare, Award, Users } from 'lucide-react';
+import { Trash2, Download, Search, Mail, CheckCircle, Square, CheckSquare, Award, Users, Loader2 } from 'lucide-react';
 
 interface Enrollment {
   id: string;
@@ -30,6 +30,7 @@ export default function EnrollmentsAdmin() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [success, setSuccess] = useState('');
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   const fetchEnrollments = async () => {
     try {
@@ -84,8 +85,24 @@ export default function EnrollmentsAdmin() {
   };
 
   const handleUpdateStatus = async (id: string, status: string) => {
-    await updateDoc(doc(db, 'training_enrollments', id), { status });
-    fetchEnrollments();
+    setUpdatingStatus(id);
+    try {
+      await updateDoc(doc(db, 'training_enrollments', id), { status });
+      
+      // Update local state immediately for instant UI feedback
+      setEnrollments(prev => prev.map(e => 
+        e.id === id ? { ...e, status: status as any } : e
+      ));
+      
+      setSuccess(`Enrollment marked as ${status}`);
+      setTimeout(() => setSuccess(''), 2000);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      setSuccess('Failed to update status');
+      setTimeout(() => setSuccess(''), 2000);
+    } finally {
+      setUpdatingStatus(null);
+    }
   };
 
   const handleBulkDelete = async () => {
@@ -100,12 +117,12 @@ export default function EnrollmentsAdmin() {
   };
 
   const handleBulkStatus = async (status: string) => {
+    setShowBulkActions(false);
     for (const id of selectedIds) {
       await updateDoc(doc(db, 'training_enrollments', id), { status });
     }
     fetchEnrollments();
     setSelectedIds(new Set());
-    setShowBulkActions(false);
     setSuccess(`${selectedIds.size} enrollments updated to ${status}`);
     setTimeout(() => setSuccess(''), 3000);
   };
@@ -314,16 +331,26 @@ export default function EnrollmentsAdmin() {
                     <td className="px-6 py-4">
                       <span className="bg-primary/20 text-accent-red px-2 py-1 rounded text-xs">{e.trainingLevel}</span>
                     </td>
-                    <td className="px-6 py-4">{getStatusBadge(e.status)}</td>
+                    <td className="px-6 py-4">
+                      {updatingStatus === e.id ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin text-accent-red" />
+                          <span className="text-slate-400 text-xs">Updating...</span>
+                        </div>
+                      ) : (
+                        getStatusBadge(e.status)
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-slate-400 text-xs">
                       {e.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
                         <select
                           value={e.status || 'pending'}
                           onChange={(s) => handleUpdateStatus(e.id, s.target.value)}
-                          className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-xs text-white"
+                          disabled={updatingStatus === e.id}
+                          className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-xs text-white cursor-pointer hover:bg-slate-600 disabled:opacity-50"
                         >
                           {STATUS_OPTIONS.map(opt => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>

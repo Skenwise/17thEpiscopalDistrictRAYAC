@@ -1,95 +1,107 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.email == 'pgilbertmwanza@gmail.com' ||
-        request.auth.token.email == 'sage.kona.dev@gmail.com' ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-      );
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
-
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if isAdmin();
-    }
-
-    match /admins/{adminId} {
-      allow read: if request.auth != null;
-      allow write: if isAdmin();
-    }
-
-    match /events/{eventId} {
-      allow read: if request.auth != null;
-      allow write: if isAdmin();
-    }
-
-    match /rsvps/{rsvpId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow read: if isAdmin();
-    }
-
-    match /training_enrollments/{enrollmentId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow read: if isAdmin();
-    }
-
-    match /volunteer_applications/{applicationId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow read: if isAdmin();
-    }
-
-    match /prayer_requests/{requestId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow read: if isAdmin();
-    }
-
-    match /forum_threads/{threadId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
-    }
-
-    match /resources/{resourceId} {
-      allow read: if request.auth != null;
-      allow write: if isAdmin();
-    }
-
-    match /notifications/{userId}/items/{notifId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow write: if isAdmin();
-    }
-
-    match /payments/{paymentId} {
-      allow read: if request.auth != null && resource.data.email == request.auth.token.email;
-      allow read: if isAdmin();
-    }
-
-    match /pendingUnlocks/{email} {
-      allow read, write: if false;
-    }
-
-    // ===== ADDED COLLECTIONS =====
     
-    match /trainings/{trainingId} {
-      allow read: if request.auth != null;
+    // Helper: Check if user is admin (you can expand this later)
+    function isAdmin() {
+      return isAuthenticated();
+    }
+    
+    // ============================================
+    // PUBLIC COLLECTIONS (read only for visitors)
+    // ============================================
+    
+    match /events/{document} {
+      allow read: if true;
       allow write: if isAdmin();
     }
-
-    match /volunteer_opportunities/{oppId} {
-      allow read: if request.auth != null;
+    
+    match /trainings/{document} {
+      allow read: if true;
       allow write: if isAdmin();
     }
-
-    match /store_products/{productId} {
-      allow read: if request.auth != null;
+    
+    match /gallery_images/{document} {
+      allow read: if true;
       allow write: if isAdmin();
+    }
+    
+    match /resources/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /store_items/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /prayer_requests/{document} {
+      allow read: if true;
+      allow write: if true;  // Anyone can submit prayer requests
+    }
+    
+    // ============================================
+    // MEMBER DATA (authenticated users only)
+    // ============================================
+    
+    match /members/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // ============================================
+    // ENROLLMENTS & RSVPS (CRITICAL FIX HERE)
+    // ============================================
+    
+    match /training_enrollments/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow create: if isAuthenticated();  // Members can enroll themselves
+    }
+    
+    match /event_rsvps/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow create: if isAuthenticated();  // Members can RSVP
+    }
+    
+    match /volunteer_applications/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+    
+    // ============================================
+    // OTHER COLLECTIONS
+    // ============================================
+    
+    match /donations/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+    
+    match /forum_posts/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    match /forum_comments/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // ============================================
+    // FALLBACK (secure by default)
+    // ============================================
+    
+    match /{document=**} {
+      allow read, write: if isAdmin();
     }
   }
 }

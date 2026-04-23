@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock, Shield } from 'lucide-react';
+import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock, Shield, Image as ImageIcon } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { collection, addDoc, getDocs, serverTimestamp, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -9,7 +9,7 @@ import { useAdmin } from '@/hooks/useAdmin';
 import { sendNotification } from '@/lib/notifications';
 import { Link } from 'react-router-dom';
 
-type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
+type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'myLearnings' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
 interface DashboardProps {
   onSectionChange?: (section: PortalSection) => void;
@@ -36,6 +36,13 @@ interface Resource {
   url: string;
 }
 
+interface GalleryImage {
+  id: string;
+  title: string;
+  image: string;
+  order?: number;
+}
+
 export default function DashboardContent({ onSectionChange }: DashboardProps) {
   const { member } = useMember();
   const { isAdmin } = useAdmin();
@@ -52,17 +59,10 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingResources, setIsLoadingResources] = useState(true);
-
-  const galleryImages = [
-    { id: 1, title: 'RAYAC Convention 2025', image: 'https://static.wixstatic.com/media/20287c_f8745bcc91a34b8c97a1e24b4b0259ed~mv2.png?originWidth=768&originHeight=576' },
-    { id: 2, title: 'Youth Outreach Program', image: 'https://static.wixstatic.com/media/20287c_ff1f2f16447946158d9c326c21b96cab~mv2.png' },
-    { id: 3, title: 'Church Activities', image: 'https://static.wixstatic.com/media/20287c_d90e8253a60140f784dc114ebde2755d~mv2.png' },
-    { id: 4, title: 'Leadership Training', image: 'https://static.wixstatic.com/media/20287c_69f6c0f98ccc43c7996d26688e9d6cc0~mv2.png?originWidth=768&originHeight=576' },
-    { id: 5, title: 'Community Service', image: 'https://static.wixstatic.com/media/20287c_ff1f2f16447946158d9c326c21b96cab~mv2.png' },
-    { id: 6, title: 'Youth Convention', image: 'https://static.wixstatic.com/media/20287c_d90e8253a60140f784dc114ebde2755d~mv2.png' },
-  ];
+  const [isLoadingGallery, setIsLoadingGallery] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -91,8 +91,27 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
       }
     };
 
+    const fetchGalleryImages = async () => {
+      try {
+        const q = query(collection(db, 'gallery_images'), orderBy('order', 'asc'));
+        const snap = await getDocs(q);
+        const images = snap.docs.map(doc => ({
+          id: doc.id,
+          title: doc.data().title,
+          image: doc.data().image,
+          order: doc.data().order
+        } as GalleryImage));
+        setGalleryImages(images);
+      } catch (error) {
+        console.error('Failed to fetch gallery images:', error);
+      } finally {
+        setIsLoadingGallery(false);
+      }
+    };
+
     fetchEvents();
     fetchResources();
+    fetchGalleryImages();
   }, []);
 
   const handlePrayerSubmit = async () => {
@@ -307,12 +326,10 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
       </motion.div>
 
       {/* Upcoming Events */}
-      <motion.div variants={itemVariants}>
+      <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-3xl font-bold font-heading text-primary-foreground">Upcoming Events</h3>
-          <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-            <Calendar className="w-6 h-6 text-accent-red" />
-          </motion.div>
+          <Calendar className="w-6 h-6 text-accent-red" />
         </div>
         {displayUpcoming.length === 0 ? (
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center">
@@ -321,53 +338,66 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
             <p className="text-slate-500 text-sm mt-1">Check back later for new events.</p>
           </div>
         ) : (
-          <motion.div className="grid md:grid-cols-3 gap-5" variants={containerVariants}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayUpcoming.map((event) => (
-              <motion.div
+              <div
                 key={event.id}
-                variants={itemVariants}
-                whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(200, 16, 46, 0.15)' }}
-                className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-600 rounded-2xl p-6 hover:border-accent-red/50 transition-all group"
+                className="bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600 rounded-xl overflow-hidden hover:border-accent-red/50 transition-all group"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="bg-gradient-to-br from-primary via-primary to-accent-red rounded-xl p-4 text-white shadow-lg">
-                    <p className="text-xs font-bold uppercase tracking-wider">{event.month}</p>
-                    <p className="text-3xl font-bold">{event.day}</p>
-                  </motion.div>
-                  <button
-                    onClick={() => handleShowDetails(event)}
-                    className="text-xs text-accent-red/70 hover:text-accent-red font-semibold border border-accent-red/30 hover:border-accent-red px-2 py-1 rounded-lg transition-all"
-                  >
-                    Details
-                  </button>
-                </div>
-                <h4 className="font-bold text-primary-foreground mb-2 text-lg">{event.title}</h4>
-                {event.location && (
-                  <div className="flex items-center gap-1 text-slate-400 text-xs mb-4">
-                    <MapPin className="w-3 h-3" />
-                    <span>{event.location}</span>
+                {event.image && (
+                  <div className="relative h-40 overflow-hidden">
+                    <img 
+                      src={event.image} 
+                      alt={event.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-800 via-transparent to-transparent opacity-60" />
                   </div>
                 )}
-                {rsvpStatus[event.id] === 'done' ? (
-                  <div className="w-full text-center text-green-400 font-semibold py-2">✓ RSVP'd!</div>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleRSVP(event)}
-                    disabled={rsvpStatus[event.id] === 'loading'}
-                    className="w-full bg-gradient-to-r from-primary/20 to-accent-red/20 hover:from-primary/30 hover:to-accent-red/30 text-primary-foreground border-2 border-primary/50 rounded-xl py-2.5 font-bold transition-all disabled:opacity-60"
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-gradient-to-br from-primary to-accent-red rounded-lg px-3 py-1.5 text-center min-w-[55px]">
+                        <p className="text-white text-xs font-bold">{event.month || 'JAN'}</p>
+                        <p className="text-white text-lg font-bold leading-tight">{event.day || '1'}</p>
+                      </div>
+                      <h4 className="font-bold text-primary-foreground text-base">{event.title}</h4>
+                    </div>
+                  </div>
+                  {event.location && (
+                    <div className="flex items-center gap-1 text-slate-400 text-xs mb-3">
+                      <MapPin className="w-3 h-3" />
+                      <span className="truncate">{event.location}</span>
+                    </div>
+                  )}
+                  <p className="text-slate-400 text-sm line-clamp-2 mb-4">{event.description}</p>
+                  {rsvpStatus[event.id] === 'done' ? (
+                    <div className="w-full text-center text-green-400 font-semibold py-2 text-sm border border-green-400/30 rounded-lg bg-green-400/10">
+                      ✓ RSVP'd!
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleRSVP(event)}
+                      disabled={rsvpStatus[event.id] === 'loading'}
+                      className="w-full bg-gradient-to-r from-primary/20 to-accent-red/20 hover:from-primary/30 hover:to-accent-red/30 text-primary-foreground border border-primary/50 rounded-lg py-2 text-sm font-semibold transition-all disabled:opacity-60"
+                    >
+                      {rsvpStatus[event.id] === 'loading' ? 'Processing...' : 'RSVP'}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleShowDetails(event)}
+                    className="w-full mt-2 text-accent-red/70 hover:text-accent-red text-xs font-semibold transition-colors"
                   >
-                    {rsvpStatus[event.id] === 'loading' ? 'Saving...' : 'RSVP'}
-                  </motion.button>
-                )}
-              </motion.div>
+                    View Details →
+                  </button>
+                </div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
-      {/* Media Gallery */}
+      {/* Media Gallery - NOW FETCHES FROM FIRESTORE */}
       <motion.div variants={itemVariants}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-3xl font-bold font-heading text-primary-foreground">Media Gallery</h3>
@@ -375,24 +405,62 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
             <ChevronRight className="w-6 h-6 text-accent-red" />
           </motion.div>
         </div>
-        <div className="relative group">
-          <div ref={galleryScrollRef} className="flex gap-5 overflow-x-auto pb-4 scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
-            {galleryImages.map((item) => (
-              <motion.div key={item.id} variants={itemVariants} whileHover={{ scale: 1.05 }} className="flex-shrink-0 w-64 h-48 rounded-2xl overflow-hidden border-2 border-slate-600 hover:border-accent-red/50 transition-all cursor-pointer group/item relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                <motion.div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex items-end p-4" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}>
-                  <p className="text-primary-foreground font-bold text-sm">{item.title}</p>
-                </motion.div>
-              </motion.div>
-            ))}
+        
+        {isLoadingGallery ? (
+          <div className="flex justify-center py-8">
+            <div className="w-8 h-8 border-4 border-accent-red/30 border-t-accent-red rounded-full animate-spin" />
           </div>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} onClick={() => galleryScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2.5 bg-gradient-to-r from-primary to-accent-red text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Scroll left">
-            <ChevronLeft className="w-5 h-5" />
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} onClick={() => galleryScrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2.5 bg-gradient-to-r from-primary to-accent-red text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Scroll right">
-            <ChevronRight className="w-5 h-5" />
-          </motion.button>
-        </div>
+        ) : galleryImages.length === 0 ? (
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center">
+            <ImageIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-slate-400">No gallery images yet.</p>
+            <p className="text-slate-500 text-sm mt-1">Check back soon for photos from our events.</p>
+          </div>
+        ) : (
+          <div className="relative group">
+            <div ref={galleryScrollRef} className="flex gap-5 overflow-x-auto pb-4 scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
+              {galleryImages.map((item) => (
+                <motion.div 
+                  key={item.id} 
+                  variants={itemVariants} 
+                  whileHover={{ scale: 1.05 }} 
+                  className="flex-shrink-0 w-64 h-48 rounded-2xl overflow-hidden border-2 border-slate-600 hover:border-accent-red/50 transition-all cursor-pointer group/item relative"
+                >
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity flex items-end p-4" 
+                    initial={{ opacity: 0 }} 
+                    whileHover={{ opacity: 1 }}
+                  >
+                    <p className="text-primary-foreground font-bold text-sm">{item.title}</p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+            {galleryImages.length > 3 && (
+              <>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }} 
+                  whileTap={{ scale: 0.95 }} 
+                  onClick={() => galleryScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })} 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2.5 bg-gradient-to-r from-primary to-accent-red text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }} 
+                  whileTap={{ scale: 0.95 }} 
+                  onClick={() => galleryScrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })} 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2.5 bg-gradient-to-r from-primary to-accent-red text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </motion.button>
+              </>
+            )}
+          </div>
+        )}
       </motion.div>
 
       {/* Resources & Downloads */}

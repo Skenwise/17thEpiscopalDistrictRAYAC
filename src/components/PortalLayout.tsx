@@ -7,7 +7,7 @@ import { auth } from '@/lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import PortalSidebar from '@/components/portal/PortalSidebar';
 
-type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
+type PortalSection = 'dashboard' | 'profile' | 'events' | 'directory' | 'resources' | 'training' | 'myLearnings' |'giving' | 'volunteer' | 'reports' | 'forum' | 'media' | 'notifications' | 'store' | 'settings';
 
 interface PortalLayoutProps {
   children: React.ReactNode;

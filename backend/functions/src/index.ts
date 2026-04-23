@@ -9,13 +9,25 @@ const db = getFirestore();
 const GEEPAY_BASE_URL = "https://pgsandbox.privatedns.org/v1";
 const HYMN_PRICE = 50;
 
+interface PaymentData {
+  email: string;
+  phone: string | null;
+  name: string;
+  amount: number;
+  productName: string | null;
+  productType?: string;
+  paymentMethod: string | null;
+  status: string;
+  createdAt: Date;
+}
+
 async function getAccessToken(): Promise<string> {
   const response = await fetch(`${GEEPAY_BASE_URL}/oauth/token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json",
-    } as Record<string, string>,
+    },
     body: JSON.stringify({
       grant_type: "client_credentials",
       client_id: process.env.GEEPAY_CLIENT_ID!,
@@ -23,7 +35,7 @@ async function getAccessToken(): Promise<string> {
     }),
   });
 
-  const data = await response.json();
+  const data = await response.json() as {access_token?: string};
   if (!data.access_token) {
     throw new Error("Failed to obtain GeePay access token");
   }
@@ -48,13 +60,11 @@ export const createCheckout = onRequest(
       return;
     }
 
-    // amount may be provided by the client; otherwise fall back to HYMN_PRICE
     const chargeAmount = typeof amount === "number" ? amount : HYMN_PRICE;
 
     try {
       const token = await getAccessToken();
       const transactionRef = uuidv4();
-      // build a return URL that includes the product name if available
       let returnUrl = "https://17thdistrictrayac.org/checkout?payment=success";
       if (productName) {
         returnUrl += `&product=${encodeURIComponent(productName)}`;
@@ -69,33 +79,30 @@ export const createCheckout = onRequest(
         paymentMethod: paymentMethod || null,
         status: "pending",
         createdAt: new Date(),
+      } as PaymentData);
+
+      const response = await fetch(`${GEEPAY_BASE_URL}/checkout/session`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "X-Client-ID": process.env.GEEPAY_CLIENT_ID!,
+          "X-Transaction-Ref": transactionRef,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: transactionRef,
+          amount: chargeAmount,
+          customer: {
+            name: name,
+            email: email,
+          },
+          return_url: returnUrl,
+          receipt_redirect: true,
+        }),
       });
 
-      const response = await fetch(
-        `${GEEPAY_BASE_URL}/checkout/session`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "X-Client-ID": process.env.GEEPAY_CLIENT_ID!,
-            "X-Transaction-Ref": transactionRef,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          } as Record<string, string>,
-          body: JSON.stringify({
-            order_id: transactionRef,
-            amount: chargeAmount,
-            customer: {
-              name: name,
-              email: email,
-            },
-            return_url: returnUrl,
-            receipt_redirect: true,
-          }),
-        }
-      );
-
-      const data = await response.json();
+      const data = await response.json() as {checkout_url?: string; message?: string};
       console.log("GeePay checkout response:", JSON.stringify(data));
 
       if (data.checkout_url) {
@@ -103,9 +110,10 @@ export const createCheckout = onRequest(
       } else {
         throw new Error(data.message || "No checkout URL returned");
       }
-    } catch (error: any) {
-      console.error("Checkout failed:", error);
-      res.status(500).json({error: error.message || "Internal server error"});
+    } catch (error) {
+      const err = error as Error;
+      console.error("Checkout failed:", err);
+      res.status(500).json({error: err.message || "Internal server error"});
     }
   }
 );
@@ -129,7 +137,7 @@ export const geepayWebhook = onRequest(
       return;
     }
 
-    const transactionRef = data.transaction_reference;
+    const transactionRef = data.transaction_reference as string;
 
     try {
       const paymentRef = db.collection("payments").doc(transactionRef);
@@ -140,7 +148,7 @@ export const geepayWebhook = onRequest(
         return;
       }
 
-      const payment = paymentDoc.data()!;
+      const payment = paymentDoc.data() as PaymentData;
 
       if (status === "successful") {
         await paymentRef.update({
@@ -151,8 +159,7 @@ export const geepayWebhook = onRequest(
 
         console.log(
           `Payment succeeded for ${payment.email}` +
-            (payment.productName ? ` (product: ${payment.productName})` : "") +
-            (payment.paymentMethod ? ` method: ${payment.paymentMethod}` : "")
+          (payment.productName ? ` (product: ${payment.productName})` : "")
         );
 
         const usersSnapshot = await db
@@ -162,12 +169,27 @@ export const geepayWebhook = onRequest(
           .get();
 
         if (!usersSnapshot.empty) {
-          await usersSnapshot.docs[0].ref.update({
-            premiumUnlocked: true,
-            paymentDate: new Date(),
-            paymentRef: transactionRef,
-          });
-          console.log(`Premium unlocked for: ${payment.email}`);
+          const userDoc = usersSnapshot.docs[0];
+          const productName = payment.productName || "";
+          const isHymnBookPurchase =
+            productName.toLowerCase().includes("hymn") ||
+            productName.toLowerCase().includes("hymn book") ||
+            productName === "Hymn Book";
+
+          if (isHymnBookPurchase) {
+            await userDoc.ref.update({
+              premiumUnlocked: true,
+              paymentDate: new Date(),
+              paymentRef: transactionRef,
+            });
+            console.log(`✅ Premium unlocked for: ${payment.email} (Hymn Book purchase)`);
+          } else {
+            await userDoc.ref.update({
+              paymentDate: new Date(),
+              paymentRef: transactionRef,
+            });
+            console.log(`❌ Premium NOT unlocked for: ${payment.email} (${productName || "offering/event"})`);
+          }
         } else {
           await db.collection("pendingUnlocks").doc(payment.email).set({
             email: payment.email,
@@ -185,8 +207,9 @@ export const geepayWebhook = onRequest(
       }
 
       res.status(200).send("OK");
-    } catch (error: any) {
-      console.error("Webhook failed:", error);
+    } catch (error) {
+      const err = error as Error;
+      console.error("Webhook failed:", err);
       res.status(500).send("Internal server error");
     }
   }

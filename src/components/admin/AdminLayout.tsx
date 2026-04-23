@@ -5,11 +5,11 @@ import { useAdmin } from '@/hooks/useAdmin';
 import {
   LayoutDashboard, Users, Calendar, BookOpen, Handshake, Download,
   Heart, Shield, LogOut, Menu, ShoppingBag, GraduationCap, MessageCircle,
-  BarChart3,
+  BarChart3, Image as ImageIcon,
 } from 'lucide-react';
 import { useState } from 'react';
 
-type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'events' | 'prayers' | 'admins' | 'trainings' | 'volunteer' | 'store' | 'forum' | 'reports';
+type AdminSection = 'dashboard' | 'members' | 'rsvps' | 'enrollments' | 'volunteers' | 'resources' | 'events' | 'prayers' | 'admins' | 'trainings' | 'volunteer' | 'store' | 'forum' | 'reports' | 'gallery';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -25,6 +25,7 @@ const menuItems = [
   { id: 'volunteer' as AdminSection, label: 'Volunteer', icon: <Handshake className="w-5 h-5" /> },
   { id: 'store' as AdminSection, label: 'Store', icon: <ShoppingBag className="w-5 h-5" /> },
   { id: 'forum' as AdminSection, label: 'Forum', icon: <MessageCircle className="w-5 h-5" /> },
+  { id: 'gallery' as AdminSection, label: 'Media Gallery', icon: <ImageIcon className="w-5 h-5" /> },
   { id: 'rsvps' as AdminSection, label: 'RSVPs', icon: <Calendar className="w-5 h-5" /> },
   { id: 'enrollments' as AdminSection, label: 'Training Enrollments', icon: <BookOpen className="w-5 h-5" /> },
   { id: 'volunteers' as AdminSection, label: 'Volunteer Applications', icon: <Handshake className="w-5 h-5" /> },

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, orderBy, query, where } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
-import { Plus, Trash2, Edit, X, DollarSign, Upload, Calendar as CalendarIcon, Clock, Search, Filter, Copy, Download, Square, CheckSquare, Eye, EyeOff, Repeat } from 'lucide-react';
+import { Plus, Trash2, Edit, X, DollarSign, Upload, Calendar as CalendarIcon, Clock, Search, Filter, Copy, Download, Square, CheckSquare, Eye, EyeOff, Repeat, Image as ImageIcon } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -53,12 +53,14 @@ export default function EventsAdmin() {
   const [success, setSuccess] = useState('');
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [showRecurringModal, setShowRecurringModal] = useState(false);
   const [recurringCount, setRecurringCount] = useState(3);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -99,7 +101,6 @@ export default function EventsAdmin() {
 
   useEffect(() => { fetchEvents(); }, []);
 
-  // Apply filters
   useEffect(() => {
     let filtered = [...events];
     if (searchTerm) {
@@ -143,7 +144,7 @@ export default function EventsAdmin() {
 
   const resetForm = () => {
     setForm({ title: '', date: '', month: '', day: '', time: '', location: '', description: '', image: '', cta: 'Register Now', featured: false, isPaid: false, price: 0, currency: 'ZMW', paymentLink: '', status: 'published', isRecurring: false, recurringPattern: 'weekly' });
-    setStartDate(null); setEndDate(null); setStartTime('09:00'); setEndTime('17:00'); setSelectedLocation(''); setCustomLocation(''); setEditingEvent(null); setError('');
+    setStartDate(null); setEndDate(null); setStartTime('09:00'); setEndTime('17:00'); setSelectedLocation(''); setCustomLocation(''); setEditingEvent(null); setError(''); setImagePreview(null);
   };
 
   const startEdit = (event: Event) => {
@@ -156,8 +157,81 @@ export default function EventsAdmin() {
       paymentLink: event.paymentLink || '', status: event.status || 'published',
       isRecurring: false, recurringPattern: 'weekly',
     });
+    setImagePreview(event.image || null);
     setSelectedLocation(event.location || '');
     setActiveTab('add');
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Invalid file type. Please upload JPEG, PNG, GIF, or WEBP images only.');
+      return;
+    }
+    
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File too large. Maximum size is 10MB.');
+      return;
+    }
+    
+    setUploadingImage(true);
+    setError('');
+    setUploadProgress(0);
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    
+    try {
+      const timestamp = Date.now();
+      const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const storagePath = `events/${timestamp}_${safeFileName}`;
+      const storageRef = ref(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(progress);
+          },
+          (error) => {
+            console.error('Upload error:', error);
+            setError(`Upload failed: ${error.message}`);
+            reject(error);
+          },
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            setForm(prev => ({ ...prev, image: url }));
+            setSuccess('Image uploaded successfully!');
+            setTimeout(() => setSuccess(''), 3000);
+            resolve();
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      setError('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const removeImage = () => {
+    setForm(prev => ({ ...prev, image: '' }));
+    setImagePreview(null);
+    setSuccess('Image removed');
+    setTimeout(() => setSuccess(''), 2000);
   };
 
   const duplicateEvent = async (event: Event) => {
@@ -175,6 +249,41 @@ export default function EventsAdmin() {
     setTimeout(() => setSuccess(''), 2000);
   };
 
+  const handleSubmit = async () => {
+    if (!form.title.trim()) { setError('Title is required.'); return; }
+    if (!startDate && !editingEvent) { setError('Please select a date.'); return; }
+    if (form.isPaid && form.price <= 0) { setError('Please set a valid price.'); return; }
+    setError(''); setIsSubmitting(true);
+    
+    try {
+      const eventData = {
+        title: form.title, date: form.date, month: form.month, day: form.day, time: form.time,
+        location: form.location, description: form.description, image: form.image, cta: form.cta,
+        featured: form.featured, isPaid: form.isPaid, price: form.price, currency: form.currency,
+        paymentLink: form.paymentLink || (form.isPaid ? `/website-checkout?product=${encodeURIComponent(form.title)}&price=${form.price}&currency=${form.currency}` : ''),
+        status: form.status,
+      };
+      
+      if (editingEvent) {
+        await updateDoc(doc(db, 'events', editingEvent.id), { ...eventData, updatedAt: serverTimestamp() });
+        setSuccess('Event updated!');
+        resetForm();
+        fetchEvents();
+        setTimeout(() => { setSuccess(''); setActiveTab('list'); setEditingEvent(null); }, 2000);
+      } else if (form.isRecurring && startDate) {
+        setShowRecurringModal(true);
+        setIsSubmitting(false);
+        return;
+      } else {
+        await addDoc(collection(db, 'events'), { ...eventData, createdAt: serverTimestamp() });
+        setSuccess('Event added!');
+        resetForm();
+        fetchEvents();
+        setTimeout(() => { setSuccess(''); setActiveTab('list'); }, 2000);
+      }
+    } catch (error) { setError('Failed to save event.'); } finally { if (!form.isRecurring) setIsSubmitting(false); }
+  };
+
   const createRecurringEvents = async () => {
     if (!startDate || recurringCount < 1) return;
     const newEvents = [];
@@ -182,7 +291,7 @@ export default function EventsAdmin() {
       title: form.title, month: '', day: '', time: `${startTime} - ${endTime}`,
       location: form.location, description: form.description, image: form.image,
       cta: form.cta, featured: form.featured, isPaid: form.isPaid, price: form.price,
-      currency: form.currency, paymentLink: form.paymentLink, status: 'published',
+      currency: form.currency, paymentLink: form.paymentLink, status: form.status,
     };
     
     for (let i = 0; i < recurringCount; i++) {
@@ -215,57 +324,12 @@ export default function EventsAdmin() {
     setSuccess(`${recurringCount} recurring events created!`);
     setTimeout(() => setSuccess(''), 2000);
     setActiveTab('list');
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]; if (!file) return;
-    setUploadingImage(true);
-    try {
-      const imageRef = ref(storage, `events/${Date.now()}_${file.name}`);
-      await uploadBytes(imageRef, file);
-      const url = await getDownloadURL(imageRef);
-      setForm(prev => ({ ...prev, image: url }));
-      setSuccess('Image uploaded!'); setTimeout(() => setSuccess(''), 2000);
-    } catch (error) { setError('Failed to upload image.'); } finally { setUploadingImage(false); }
-  };
-
-  const handleSubmit = async () => {
-    if (!form.title.trim()) { setError('Title is required.'); return; }
-    if (!startDate && !editingEvent) { setError('Please select a date.'); return; }
-    if (form.isPaid && form.price <= 0) { setError('Please set a valid price.'); return; }
-    setError(''); setIsSubmitting(true);
-    
-    try {
-      const eventData = {
-        title: form.title, date: form.date, month: form.month, day: form.day, time: form.time,
-        location: form.location, description: form.description, image: form.image, cta: form.cta,
-        featured: form.featured, isPaid: form.isPaid, price: form.price, currency: form.currency,
-        paymentLink: form.paymentLink || (form.isPaid ? `/website-checkout?product=${encodeURIComponent(form.title)}&price=${form.price}&currency=${form.currency}` : ''),
-        status: form.status,
-      };
-      
-      if (editingEvent) {
-        await updateDoc(doc(db, 'events', editingEvent.id), { ...eventData, updatedAt: serverTimestamp() });
-        setSuccess('Event updated!');
-      } else if (form.isRecurring && startDate) {
-        setShowRecurringModal(true);
-        setIsSubmitting(false);
-        return;
-      } else {
-        await addDoc(collection(db, 'events'), { ...eventData, createdAt: serverTimestamp() });
-        setSuccess('Event added!');
-      }
-      
-      if (!form.isRecurring || editingEvent) {
-        resetForm(); fetchEvents();
-        setTimeout(() => { setSuccess(''); setActiveTab('list'); setEditingEvent(null); }, 2000);
-      }
-    } catch (error) { setError('Failed to save event.'); } finally { if (!form.isRecurring) setIsSubmitting(false); }
+    setIsSubmitting(false);
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Delete this event?')) {
-      try { await deleteDoc(doc(db, 'events', id)); fetchEvents(); setSelectedIds(prev => { const newSet = new Set(prev); newSet.delete(id); return newSet; }); } 
+      try { await deleteDoc(doc(db, 'events', id)); fetchEvents(); } 
       catch (error) { console.error(error); }
     }
   };
@@ -315,9 +379,9 @@ export default function EventsAdmin() {
     return <span className="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-xs">Cancelled</span>;
   };
 
-  const cancelEdit = () => { resetForm(); setActiveTab('list'); };
-
   const getStatusCount = (status: string) => events.filter(e => e.status === status).length;
+
+  const cancelEdit = () => { resetForm(); setActiveTab('list'); };
 
   if (isLoading) return <div className="flex justify-center py-20"><div className="w-16 h-16 border-4 border-accent-red/30 border-t-accent-red rounded-full animate-spin" /></div>;
 
@@ -331,7 +395,6 @@ export default function EventsAdmin() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center"><p className="text-2xl font-bold text-white">{events.length}</p><p className="text-slate-400 text-sm">Total Events</p></div>
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center"><p className="text-2xl font-bold text-white">{getStatusCount('published')}</p><p className="text-slate-400 text-sm">Published</p></div>
@@ -351,7 +414,43 @@ export default function EventsAdmin() {
             <div><label className="block text-slate-400 text-sm mb-2">Location</label><select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white"><option value="">Select location</option>{LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}</select></div>
             {selectedLocation === 'Other (type manually)' && <div><label className="block text-slate-400 text-sm mb-2">Custom Location</label><input type="text" value={customLocation} onChange={(e) => setCustomLocation(e.target.value)} className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white" /></div>}
             <div><label className="block text-slate-400 text-sm mb-2">CTA Button Text</label><input type="text" value={form.cta} onChange={(e) => setForm({ ...form, cta: e.target.value })} className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white" /></div>
-            <div><label className="block text-slate-400 text-sm mb-2">Event Image</label><div className="flex gap-2"><input type="text" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} className="flex-1 px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white" /><label className="px-4 py-3 bg-slate-600 rounded-xl cursor-pointer"><Upload className="w-5 h-5 text-white" /><input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploadingImage} /></label></div>{uploadingImage && <p className="text-slate-400 text-xs mt-1">Uploading...</p>}</div>
+            
+            {/* Enhanced Image Upload Section */}
+            <div className="md:col-span-2">
+              <label className="block text-slate-400 text-sm mb-2">Event Image</label>
+              <div className="flex gap-3 items-start">
+                <div className="flex-1">
+                  <div className="flex gap-2">
+                    <input type="text" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="Image URL or upload a file" className="flex-1 px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder:text-slate-500" />
+                    <label className={`px-4 py-3 bg-slate-600 rounded-xl cursor-pointer hover:bg-slate-500 transition-colors flex items-center gap-2 ${uploadingImage ? 'opacity-50' : ''}`}>
+                      <Upload className="w-5 h-5 text-white" />
+                      <span className="text-white text-sm hidden md:inline">Upload</span>
+                      <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/jpg" onChange={handleImageUpload} className="hidden" disabled={uploadingImage} />
+                    </label>
+                    {form.image && (
+                      <button onClick={removeImage} className="px-3 py-3 bg-red-600 hover:bg-red-700 rounded-xl text-white transition-colors">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                  {uploadingImage && (
+                    <div className="mt-2">
+                      <div className="w-full bg-slate-600 rounded-full h-2">
+                        <div className="bg-accent-red h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
+                      </div>
+                      <p className="text-slate-400 text-xs mt-1">{Math.round(uploadProgress)}% uploaded</p>
+                    </div>
+                  )}
+                  <p className="text-slate-500 text-xs mt-2">Supported formats: JPEG, PNG, GIF, WEBP. Max size: 10MB</p>
+                </div>
+                {imagePreview && (
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+            </div>
+            
             <div><label className="block text-slate-400 text-sm mb-2">Status</label><select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })} className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white">{STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}</select></div>
             <div><label className="flex items-center gap-3 cursor-pointer mt-6"><input type="checkbox" checked={form.isRecurring} onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })} className="w-4 h-4 rounded" /><span className="text-slate-300 text-sm font-medium flex items-center gap-2"><Repeat className="w-4 h-4" />Create recurring event series</span></label></div>
           </div>
@@ -366,7 +465,6 @@ export default function EventsAdmin() {
         </div>
       ) : (
         <>
-          {/* Filters */}
           <div className="flex flex-wrap gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-3 flex-1">
               <div className="relative flex-1 min-w-[200px]"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" /><input type="text" placeholder="Search events..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white" /></div>
@@ -376,13 +474,10 @@ export default function EventsAdmin() {
             {selectedIds.size > 0 && <button onClick={() => setShowBulkActions(true)} className="flex items-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white px-4 py-2 rounded-lg"><Trash2 className="w-4 h-4" /> Delete ({selectedIds.size})</button>}
           </div>
 
-          {/* Bulk Actions Modal */}
           {showBulkActions && (<div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-slate-800 border border-accent-red/30 rounded-2xl p-6 max-w-md w-full"><div className="flex justify-between mb-4"><h3 className="text-xl font-bold text-accent-red">Bulk Actions</h3><button onClick={() => setShowBulkActions(false)} className="text-slate-400 hover:text-white">✕</button></div><p className="text-slate-300 mb-4">{selectedIds.size} events selected</p><div className="space-y-2"><button onClick={() => handleBulkStatus('published')} className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">Mark as Published</button><button onClick={() => handleBulkStatus('draft')} className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded-lg">Mark as Draft</button><button onClick={() => handleBulkStatus('cancelled')} className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Mark as Cancelled</button><button onClick={handleBulkDelete} className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Delete All</button></div></div></div>)}
 
-          {/* Recurring Modal */}
           {showRecurringModal && (<div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-slate-800 border border-accent-red/30 rounded-2xl p-6 max-w-md w-full"><div className="flex justify-between mb-4"><h3 className="text-xl font-bold text-accent-red">Create Recurring Events</h3><button onClick={() => setShowRecurringModal(false)} className="text-slate-400 hover:text-white">✕</button></div><p className="text-slate-300 mb-2">How many events to create?</p><input type="number" value={recurringCount} onChange={(e) => setRecurringCount(parseInt(e.target.value) || 1)} min={1} max={12} className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white mb-4" /><div className="flex gap-3"><button onClick={createRecurringEvents} className="flex-1 bg-accent-red hover:bg-accent-red/90 text-white py-2 rounded-lg">Create {recurringCount} Events</button><button onClick={() => setShowRecurringModal(false)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg">Cancel</button></div></div></div>)}
 
-          {/* Events Table */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
