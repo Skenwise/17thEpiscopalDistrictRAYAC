@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useMember } from '@/hooks/useMember';
-import { BookOpen, Video, FileText, Play, ExternalLink } from 'lucide-react';
+import { BookOpen, Video, FileText, Play, ExternalLink, AlertCircle } from 'lucide-react';
 
 interface Enrollment {
   id: string;
@@ -30,17 +30,22 @@ export default function MyLearnings() {
   const [trainings, setTrainings] = useState<Record<string, Training>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(null);
+  const [iframeError, setIframeError] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (member) {
       fetchMyEnrollments();
+    } else {
+      setIsLoading(false);
     }
   }, [member]);
 
   const fetchMyEnrollments = async () => {
     if (!member) return;
     
+    setIsLoading(true);
     try {
+      // Get user's enrollments
       const q = query(
         collection(db, 'training_enrollments'),
         where('userId', '==', member.userId)
@@ -53,21 +58,35 @@ export default function MyLearnings() {
       
       setEnrollments(myEnrollments);
       
-      // Fetch the actual training details for each enrollment
-      const trainingIds = [...new Set(myEnrollments.map(e => e.trainingId))];
-      const trainingData: Record<string, Training> = {};
-      
-      for (const trainingId of trainingIds) {
-        const trainingSnap = await getDocs(
-          query(collection(db, 'trainings'), where('__name__', '==', trainingId))
-        );
-        if (!trainingSnap.empty) {
-          const doc = trainingSnap.docs[0];
-          trainingData[trainingId] = { id: doc.id, ...doc.data() } as Training;
-        }
+      if (myEnrollments.length === 0) {
+        setIsLoading(false);
+        return;
       }
       
-      setTrainings(trainingData);
+      // Get ALL trainings from Firestore (fixes the documentId() error)
+      const allTrainingsSnap = await getDocs(collection(db, 'trainings'));
+      const allTrainings: Record<string, Training> = {};
+      allTrainingsSnap.docs.forEach(doc => {
+        allTrainings[doc.id] = { id: doc.id, ...doc.data() } as Training;
+      });
+      
+      // Match enrollments with trainings
+      const matchedTrainings: Record<string, Training> = {};
+      myEnrollments.forEach(enrollment => {
+        // Try 1: Match by trainingId (document ID)
+        if (allTrainings[enrollment.trainingId]) {
+          matchedTrainings[enrollment.trainingId] = allTrainings[enrollment.trainingId];
+        } 
+        // Try 2: Match by trainingTitle
+        else {
+          const foundByTitle = Object.values(allTrainings).find(t => t.title === enrollment.trainingTitle);
+          if (foundByTitle) {
+            matchedTrainings[foundByTitle.id] = foundByTitle;
+          }
+        }
+      });
+      
+      setTrainings(matchedTrainings);
     } catch (error) {
       console.error('Failed to fetch enrollments:', error);
     } finally {
@@ -76,6 +95,7 @@ export default function MyLearnings() {
   };
 
   const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return '';
     if (url.includes('youtube.com/watch?v=')) {
       return url.replace('watch?v=', 'embed/');
     }
@@ -90,8 +110,12 @@ export default function MyLearnings() {
     return url;
   };
 
-  const eLearningEnrollments = enrollments.filter(e => e.isElearning);
-  const inPersonEnrollments = enrollments.filter(e => !e.isElearning);
+  const handleIframeError = (trainingId: string) => {
+    setIframeError(prev => ({ ...prev, [trainingId]: true }));
+  };
+
+  const eLearningEnrollments = enrollments.filter(e => e.isElearning === true);
+  const inPersonEnrollments = enrollments.filter(e => e.isElearning !== true);
 
   if (isLoading) {
     return (
@@ -123,7 +147,7 @@ export default function MyLearnings() {
         <div className="space-y-4">
           <button
             onClick={() => setSelectedTraining(null)}
-            className="text-accent-red hover:underline mb-4"
+            className="text-accent-red hover:underline mb-4 inline-flex items-center gap-1"
           >
             ← Back to My Courses
           </button>
@@ -131,19 +155,47 @@ export default function MyLearnings() {
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/30 rounded-xl p-6">
             <h3 className="text-2xl font-bold text-white mb-4">{selectedTraining.title}</h3>
             
-            {/* Video Player */}
+            {/* Video Player with graceful fallback */}
             {selectedTraining.videoUrl && (
               <div className="mb-6">
-                <div className="relative pb-[56.25%] h-0 rounded-lg overflow-hidden bg-slate-900">
-                  <iframe
-                    src={getYouTubeEmbedUrl(selectedTraining.videoUrl)}
-                    className="absolute top-0 left-0 w-full h-full"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title={selectedTraining.title}
-                  />
-                </div>
+                {iframeError[selectedTraining.id] ? (
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-6 text-center">
+                    <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-3" />
+                    <h4 className="text-white font-semibold mb-2">Video Unavailable</h4>
+                    <p className="text-slate-400 text-sm mb-4">
+                      This video cannot be embedded due to the website's security settings.
+                    </p>
+                    <a
+                      href={selectedTraining.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Open Video in New Tab
+                    </a>
+                  </div>
+                ) : (
+                  <div className="relative pb-[56.25%] h-0 rounded-lg overflow-hidden bg-slate-900">
+                    <iframe
+                      src={getYouTubeEmbedUrl(selectedTraining.videoUrl)}
+                      className="absolute top-0 left-0 w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={selectedTraining.title}
+                      onError={() => handleIframeError(selectedTraining.id)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Description */}
+            {selectedTraining.description && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-white mb-2">About this course</h4>
+                <p className="text-slate-400">{selectedTraining.description}</p>
               </div>
             )}
             
@@ -179,11 +231,12 @@ export default function MyLearnings() {
             <div>
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <Video className="w-5 h-5 text-purple-400" />
-                Online Courses
+                Online Courses ({eLearningEnrollments.length})
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {eLearningEnrollments.map((enrollment) => {
-                  const training = trainings[enrollment.trainingId];
+                  const training = trainings[enrollment.trainingId] || 
+                    Object.values(trainings).find(t => t.title === enrollment.trainingTitle);
                   return (
                     <motion.div
                       key={enrollment.id}
@@ -197,13 +250,37 @@ export default function MyLearnings() {
                         </span>
                       </div>
                       
-                      {training && (
+                      {training && training.videoUrl && !iframeError[training.id] && (
+                        <div className="mb-3">
+                          <div className="relative pb-[56.25%] h-0 rounded-lg overflow-hidden bg-slate-800">
+                            <iframe
+                              src={getYouTubeEmbedUrl(training.videoUrl)}
+                              className="absolute top-0 left-0 w-full h-full"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              title={training.title}
+                              onError={() => handleIframeError(training.id)}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {training ? (
                         <button
                           onClick={() => setSelectedTraining(training)}
-                          className="flex items-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white px-4 py-2 rounded-lg transition-colors mt-4"
+                          className="w-full flex items-center justify-center gap-2 bg-accent-red hover:bg-accent-red/90 text-white px-4 py-2 rounded-lg transition-colors mt-4"
                         >
                           <Play className="w-4 h-4" />
                           Continue Learning
+                        </button>
+                      ) : (
+                        <button
+                          disabled
+                          className="w-full flex items-center justify-center gap-2 bg-slate-700 text-slate-400 px-4 py-2 rounded-lg mt-4 cursor-not-allowed"
+                        >
+                          <Play className="w-4 h-4" />
+                          Course content not available
                         </button>
                       )}
                     </motion.div>
@@ -216,7 +293,7 @@ export default function MyLearnings() {
           {/* In-Person Trainings */}
           {inPersonEnrollments.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4">In-Person Trainings</h3>
+              <h3 className="text-xl font-semibold text-white mb-4">In-Person Trainings ({inPersonEnrollments.length})</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {inPersonEnrollments.map((enrollment) => (
                   <div
@@ -234,6 +311,9 @@ export default function MyLearnings() {
                       </span>
                     </div>
                     <p className="text-slate-400 text-sm mt-2">Level: {enrollment.trainingLevel}</p>
+                    {enrollment.status !== 'completed' && (
+                      <p className="text-slate-500 text-xs mt-3">In-person training - check events for schedule</p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -244,7 +324,7 @@ export default function MyLearnings() {
             <div className="text-center py-12 bg-slate-800/50 rounded-xl">
               <BookOpen className="w-16 h-16 text-slate-600 mx-auto mb-4" />
               <p className="text-slate-400 mb-4">You haven't enrolled in any trainings yet.</p>
-              <a href="/portal/trainings" className="text-accent-red hover:underline">
+              <a href="/portal/training" className="text-accent-red hover:underline">
                 Browse Available Trainings →
               </a>
             </div>

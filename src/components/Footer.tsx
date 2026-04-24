@@ -116,7 +116,7 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-accent-red flex-shrink-0 mt-0.5" />
                 <span className="font-paragraph text-sm text-white/80">
-                  +260 XXX XXX XXX
+                  +260 967 939 395
                 </span>
               </li>
             </ul>

@@ -5,6 +5,7 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { Plus, Trash2, Edit, X, Upload, Image as ImageIcon, CheckCircle, XCircle } from 'lucide-react';
+import ImageLightbox from '@/components/ui/ImageLightbox';
 
 interface GalleryImage {
   id: string;
@@ -32,6 +33,10 @@ export default function MediaGalleryAdmin() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editingItem, setEditingItem] = useState<GalleryImage | null>(null);
+  
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -246,13 +251,11 @@ export default function MediaGalleryAdmin() {
     if (!confirm(`Delete "${item.title}"?`)) return;
     
     try {
-      // Delete from Storage first
       if (item.storagePath) {
         try {
           await deleteObject(ref(storage, item.storagePath));
           console.log('Deleted from storage:', item.storagePath);
         } catch (e: any) {
-          // If file not found, just log and continue
           if (e.code === 'storage/object-not-found') {
             console.warn('File already deleted from storage:', item.storagePath);
           } else {
@@ -261,7 +264,6 @@ export default function MediaGalleryAdmin() {
         }
       }
       
-      // Then delete from Firestore
       await deleteDoc(doc(db, 'gallery_images', item.id));
       console.log('Deleted from Firestore:', item.id);
       
@@ -491,7 +493,11 @@ export default function MediaGalleryAdmin() {
               {images.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden hover:border-accent-red/30 transition-all group"
+                  className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden hover:border-accent-red/30 transition-all group cursor-pointer"
+                  onClick={() => {
+                    setLightboxIndex(idx);
+                    setLightboxOpen(true);
+                  }}
                 >
                   <div className="relative h-40 overflow-hidden">
                     <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -501,14 +507,14 @@ export default function MediaGalleryAdmin() {
                     <div className="flex justify-between items-center mt-2">
                       <div className="flex gap-1">
                         <button
-                          onClick={() => moveImage(idx, 'up')}
+                          onClick={(e) => { e.stopPropagation(); moveImage(idx, 'up'); }}
                           disabled={idx === 0}
                           className="p-1 hover:bg-slate-700 rounded disabled:opacity-30 text-slate-400 hover:text-white"
                         >
                           ↑
                         </button>
                         <button
-                          onClick={() => moveImage(idx, 'down')}
+                          onClick={(e) => { e.stopPropagation(); moveImage(idx, 'down'); }}
                           disabled={idx === images.length - 1}
                           className="p-1 hover:bg-slate-700 rounded disabled:opacity-30 text-slate-400 hover:text-white"
                         >
@@ -517,13 +523,13 @@ export default function MediaGalleryAdmin() {
                       </div>
                       <div className="flex gap-1">
                         <button
-                          onClick={() => startEdit(item)}
+                          onClick={(e) => { e.stopPropagation(); startEdit(item); }}
                           className="p-1 hover:bg-blue-500/20 rounded text-slate-400 hover:text-blue-400"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(item)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
                           className="p-1 hover:bg-red-500/20 rounded text-slate-400 hover:text-red-400"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -536,6 +542,15 @@ export default function MediaGalleryAdmin() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Image Lightbox */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={images.map(img => ({ id: img.id, title: img.title, image: img.image }))}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
       )}
     </div>
   );
