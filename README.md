@@ -1,147 +1,284 @@
-# Wixstro - Wix Astro Template
+# RAYAC - 17th Episcopal District Youth & Children Ministry
 
-A modern, full-featured Wix Astro template built with React, TypeScript, and Tailwind CSS. This template provides a solid foundation for building dynamic, interactive websites with Wix's powerful ecosystem.
+## Project Overview
 
-## 🚀 Features
+Two interconnected projects serving the AME Church youth ministry in Zambia:
 
-- **Astro Framework** - Modern static site generator with server-side rendering
-- **React Integration** - Full React support with JSX components
-- **TypeScript** - Type-safe development experience
-- **Tailwind CSS** - Utility-first CSS framework with custom components
-- **Wix Integration** - Seamless integration with Wix services and APIs
-- **Modern UI Components** - Radix UI components with custom styling
-- **Authentication** - Built-in member authentication and protected routes
-- **CMS Integration** - Content management system integration
-- **Client-side Routing** - React Router for seamless navigation
-- **Responsive Design** - Mobile-first responsive design
-- **Testing** - Vitest testing framework setup
-- **Development Tools** - ESLint, TypeScript checking, and more
+| Project | Tech Stack | Purpose |
+|---------|------------|---------|
+| **Website** | React + Vite + Astro + TailwindCSS | Admin portal + Member portal |
+| **Mobile App** | React Native + Expo | AME Church Hymn Book (678 hymns, English & Bemba) |
 
-## 🛠️ Tech Stack
-
-- **Framework**: Astro 5.8.0
-- **Frontend**: React 18.3.0
-- **Styling**: Tailwind CSS 3.4.14
-- **Language**: TypeScript 5.8.3
-- **UI Components**: Radix UI
-- **State Management**: Zustand
-- **Forms**: React Hook Form with Zod validation
-- **Testing**: Vitest
-- **Build Tool**: Vite
-- **Deployment**: Cloudflare
-
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (version 18 or higher)
-- npm or yarn package manager
-- Wix account and site
-
-### Installation
-
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Set up environment variables**:
-   ```bash
-   npm run env
-   ```
-
-3. **Start development server**:
-   ```bash
-   npm run dev
-   ```
-
-The development server will start and you can view your site at `http://localhost:4321`.
-
-## 📁 Project Structure
-
-```
-main/
-├── src/
-│   ├── components/          # React components
-│   │   ├── ui/             # Reusable UI components
-│   │   ├── Head.tsx        # Page head component
-│   │   └── Router.tsx      # Routing component
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Utility functions
-│   ├── pages/              # Astro pages
-│   └── styles/             # Global styles
-├── integrations/           # Wix integrations
-│   ├── cms/               # CMS integration
-│   └── members/           # Member authentication
-├── public/                # Static assets
-└── eslint-rules/          # Custom ESLint rules
-```
-
-## 🎨 UI Components
-
-This template includes a comprehensive set of UI components built with Radix UI and styled with Tailwind CSS:
-
-- **Layout**: Accordion, Collapsible, Tabs, Sheet
-- **Forms**: Input, Select, Checkbox, Radio Group, Switch
-- **Navigation**: Navigation Menu, Menubar, Breadcrumb
-- **Feedback**: Alert, Toast, Progress, Skeleton
-- **Overlays**: Dialog, Popover, Tooltip, Hover Card
-- **Data Display**: Table, Card, Badge, Avatar
-- **Interactive**: Button, Toggle, Slider, Command
-
-## 🔧 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run release` - Release to Wix
-- `npm run env` - Pull environment variables
-- `npm run check` - Type check with Astro
-- `npm run test:run` - Run tests
-- `npm install` - Install dependencies
-
-## 🧪 Testing
-
-The project includes Vitest for testing:
-
-```bash
-npm run test:run
-```
-
-## 📱 Responsive Design
-
-The template is built with a mobile-first approach and includes:
-
-- Responsive breakpoints
-- Touch-friendly interactions
-- Optimized images
-- Flexible layouts
-
-## 🚀 Deployment
-
-The template is configured for deployment on Cloudflare:
-
-```bash
-npm run build
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
-
-## 🆘 Support
-
-For support and questions:
-
-- Check the [Wix Developer Documentation](https://dev.wix.com/)
-- Review the [Astro Documentation](https://docs.astro.build/)
-
+**Live Website:** https://17thdistrictrayac.org  
+**Firebase Project:** `districtrayac`  
+**Mobile App Package:** `app.rork.ame_church_hymn_book`
 
 ---
 
-Built with ❤️ using Wix Vibe, Astro, and modern web technologies.
+## Infrastructure
+
+| Service | Provider | Purpose |
+|---------|----------|---------|
+| Website Hosting | Firebase Hosting | Static site delivery |
+| Database | Firebase Firestore | User data, events, payments history |
+| Auth | Firebase Auth | Email/password authentication |
+| File Storage | Firebase Storage | Gallery images, training materials |
+| Payment API | DigitalOcean Droplet | Geepay mobile money processing |
+| Payment Database | PostgreSQL (Droplet) | New payment records |
+| SSL | Let's Encrypt | Free HTTPS for API |
+
+### Droplet Details
+- **IP:** 164.90.227.4
+- **API Domain:** `api.17thdistrictrayac.org`
+- **Payment Endpoint:** `https://api.17thdistrictrayac.org/rayac/payments/checkout`
+- **Webhook:** `https://api.17thdistrictrayac.org/rayac/payments/webhook`
+
+---
+
+## Project Structure
+
+```
+17thEpiscopalDistrictRAYAC/
+├── src/
+│   ├── components/
+│   │   ├── admin/           # Admin panel (14 files)
+│   │   ├── portal/          # Member portal (16 files)
+│   │   ├── pages/           # Page components
+│   │   └── ui/              # Shared UI components
+│   ├── lib/
+│   │   └── firebase.ts      # Firebase configuration
+│   ├── hooks/
+│   │   ├── useMember.ts     # Member auth hook
+│   │   └── useAdmin.ts      # Admin auth hook
+│   └── pages/
+│       ├── index.astro      # Home page
+│       └── website-checkout.astro
+├── backend/
+│   └── functions/           # Firebase Functions (deprecated for payments)
+├── public/
+│   └── app/                 # PWA Hymn Book web version
+├── firestore.rules          # Database security rules
+├── storage.rules            # File storage security rules
+└── firestore.indexes.json   # Database indexes
+```
+
+---
+
+## Features
+
+### Website - Admin Portal
+- Dashboard with real-time stats
+- Members management (CRUD)
+- Events management (CRUD + RSVPs)
+- Training programs (in-person + e-learning)
+- Training enrollments with status tracking
+- Media gallery (multiple image upload)
+- Store management
+- Resources & downloads
+- Prayer requests
+- Volunteer applications
+- Community forum
+- Financial reports & analytics
+- Contact form submissions
+- Payment history (filtered by project)
+
+### Website - Member Portal
+- Personal dashboard
+- Event registration & RSVP
+- Training enrollment
+- My Learnings (e-learning courses)
+- Giving history & offerings
+- Media gallery (from Firestore)
+- Resources download
+- Community forum
+- Profile management
+- Premium upgrade banner (for app users)
+
+### Mobile App - AME Church Hymn Book
+- 678 hymns in English & Bemba
+- Free preview (first 10 hymns)
+- Premium unlock (K50 one-time via Geepay)
+- Search & categories
+- Dark/light mode
+- Font size adjustment
+- Call to Worship, Decalogue, Apostles' Creed
+- Hymn of the Day (changes daily)
+- Offline capable (PWA version)
+- Sign in via website (deep link)
+- Cross-platform: Android APK + PWA
+
+---
+
+## Payment Integration (Geepay)
+
+### Flow
+```
+User → Website/App → Droplet API → Geepay → Mobile Money (MTN/Airtel)
+                                          ↓
+                                   Webhook → Droplet → PostgreSQL
+```
+
+### Configuration
+- **Gateway:** https://gateway.mygeepay.com
+- **Client ID:** `a17ca625-ca37-4d94-8d75-e4c22e04c414`
+- **Product:** Hymn Book (K50), Offerings (variable)
+- **Payment Method:** Mobile Money (MTN/Airtel), Card
+
+### Droplet Services
+| Service | Port | Purpose |
+|---------|------|---------|
+| Nginx | 80/443 | Reverse proxy + SSL |
+| web-app-gateway | 3000 | Request validation |
+| app-api-gateway | - | API routing |
+| integrations-service | 3010 | Geepay integration |
+| PostgreSQL | 5432 | Payment records |
+
+---
+
+## Database Schema (PostgreSQL - Payments)
+
+```sql
+payments
+├── id (TEXT PRIMARY KEY)
+├── email (TEXT NOT NULL)
+├── phone (TEXT)
+├── name (TEXT)
+├── amount (DECIMAL)
+├── currency (TEXT DEFAULT 'ZMW')
+├── product_name (TEXT)
+├── product_type (TEXT) -- 'hymn', 'offering', 'event', 'marriage'
+├── payment_method (TEXT)
+├── status (TEXT DEFAULT 'pending')
+├── checkout_url (TEXT)
+├── transaction_ref (TEXT)
+├── created_at (TIMESTAMP)
+└── completed_at (TIMESTAMP)
+```
+
+---
+
+## Authentication Flow (App ↔ Website)
+
+1. App opens `https://17thdistrictrayac.org/sign-in?source=app`
+2. User signs in with email/password
+3. Website redirects via deep link: `rayac-hymn://auth-callback`
+4. App auth-callback handles the redirect
+5. Premium check: `users/{uid}.premiumUnlocked`
+
+---
+
+## Deployment Commands
+
+### Website
+```bash
+cd /home/skenwise/dbs/Desktop/Project/17thEpiscopalDistrictRAYAC
+npm run build
+firebase deploy --only hosting
+```
+
+### Firestore Rules
+```bash
+firebase deploy --only firestore
+```
+
+### Storage Rules
+```bash
+firebase deploy --only storage
+```
+
+### Mobile App (APK Build)
+```bash
+cd /home/skenwise/dbs/Desktop/Project/Mobile-Hymn-Book/gilbert_version/rork-ame-church-hymn-book
+eas build --platform android --profile production
+```
+
+### Droplet Services
+```bash
+# Rebuild integrations-service
+cd /opt/kabert-hub
+docker build -t kabert-hub-integrations-service -f ./api/integrations-service/Dockerfile ./api/integrations-service
+docker stop integrations-service && docker rm integrations-service
+docker run -d --name integrations-service --network kabert-hub_default -p 3010:3010 --env-file /opt/kabert-hub/api/integrations-service/.env -e PORT=3010 kabert-hub-integrations-service
+
+# View logs
+docker logs -f integrations-service
+```
+
+---
+
+## Key Configuration Files
+
+| File | Location | Purpose |
+|------|----------|---------|
+| Firebase Config | `src/lib/firebase.ts` | API keys, project ID |
+| Storage Rules | `storage.rules` | File access permissions |
+| Firestore Rules | `firestore.rules` | Database permissions |
+| Droplet .env | `/opt/kabert-hub/api/integrations-service/.env` | Geepay credentials, DB URL |
+| App Config | `app.json` | Expo configuration |
+| Keystore | `keystore/release.keystore` | Android signing (pass: `Black99raiser%*`) |
+
+---
+
+## Known Issues & Fixes Applied
+
+| Issue | Fix |
+|-------|-----|
+| Media upload stuck at 0% | Simplified to `uploadBytes`, added storage rules |
+| Enrollment status not updating | Fixed Firestore write permissions |
+| Gallery not showing on portal | Changed from hardcoded to Firestore fetch |
+| PWA white screen on iPhone | Fixed asset paths to `/app/` prefix |
+| PWA sign-in redirect loop | Created dedicated `/pwa-auth` page |
+| CORS errors on API | Added CORS headers to Nginx |
+| Geepay 402 errors | Fixed `X-Callback-URL` header placement |
+| UnionHub payments in Rayac | Added `productType !== 'marriage'` filter |
+| Hymn of the Day static | Changed to daily rotation by day of year |
+| Sign out not working | Added confirmation dialog + Firebase signOut |
+
+---
+
+## Migration Progress (Google Cloud → DigitalOcean)
+
+| Component | Status |
+|-----------|--------|
+| Payment Processing | ✅ Migrated to droplet |
+| Payment Database | ✅ PostgreSQL on droplet |
+| Geepay API Integration | ✅ Droplet integrations-service |
+| Cloud Functions (Geepay) | ✅ Deleted |
+| VPC Connectors | ✅ Deleted |
+| Static IPs | ✅ Deleted |
+| Firebase Auth | ⬜ Still on Firebase |
+| Firestore | ⬜ Still on Firebase |
+| Firebase Hosting | ⬜ Still on Firebase |
+| Firebase Storage | ⬜ Still on Firebase |
+
+---
+
+## Support & Contact
+
+- **Developer:** Sage Kona (`skndream2023@gmail.com`)
+- **Project Owner:** Gilbert Mwanza (`pgilbertmwanza@gmail.com`)
+- **Organization:** Kabert Records Hub Limited
+- **Church:** 17th Episcopal District, AME Church
+- **Phone:** +260 967 939 395
+- **Domain:** 17thdistrictrayac.org (Namecheap)
+
+---
+
+## Tech Stack Summary
+
+```
+Frontend:    React 18 + Vite + Astro + TailwindCSS + Framer Motion
+Backend:     Node.js + Express.js (droplet) + Firebase Functions (legacy)
+Database:    Firebase Firestore + PostgreSQL (droplet)
+Auth:        Firebase Auth (JWT)
+Payments:    Geepay API (Zambia mobile money)
+Storage:     Firebase Storage
+Hosting:     Firebase Hosting + DigitalOcean Droplet
+Mobile:      React Native + Expo (Android + PWA)
+DevOps:      Docker + Docker Compose + Nginx + Let's Encrypt
+```
+
+---
+
+**Last Updated:** July 25, 2026  
+**Project Status:** Active - Production
