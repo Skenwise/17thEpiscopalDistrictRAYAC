@@ -57,6 +57,10 @@ export default function GivingContent() {
 
       snapshot.forEach(doc => {
         const data = doc.data() as Payment;
+        
+        // Skip marriage/UnionHub transactions
+        if (data.productType === 'marriage') return;
+        
         paymentList.push({ id: doc.id, ...data });
         
         if (data.status === 'success') {

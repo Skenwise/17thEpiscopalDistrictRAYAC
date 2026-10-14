@@ -67,6 +67,10 @@ export default function ReportsAdmin() {
 
       paymentsSnap.forEach(doc => {
         const data = doc.data();
+        
+        // Skip marriage/UnionHub transactions
+        if (data.productType === 'marriage') return;
+        
         const amount = data.amount || 0;
         const productName = data.productName || 'Unknown';
         const productType = data.productType || 'general';

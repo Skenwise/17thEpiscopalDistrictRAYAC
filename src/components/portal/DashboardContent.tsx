@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock, Shield, Image as ImageIcon } from 'lucide-react';
+import { ChevronRight, Heart, BookOpen, Users, Zap, Calendar, Download, Play, ArrowRight, ChevronLeft, X, FileText, Music, MapPin, Clock, Shield, Image as ImageIcon, Crown } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { collection, addDoc, getDocs, serverTimestamp, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -63,6 +63,10 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingResources, setIsLoadingResources] = useState(true);
   const [isLoadingGallery, setIsLoadingGallery] = useState(true);
+
+  // Check if user is from the app and not premium
+  const isAppUser = window.location.search.includes('source=app');
+  const showPremiumBanner = member && !member.premiumUnlocked && isAppUser;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -213,6 +217,36 @@ export default function DashboardContent({ onSectionChange }: DashboardProps) {
             <span className="text-sm font-semibold">Admin Panel</span>
           </Link>
         </div>
+      )}
+
+      {/* Premium Upgrade Banner - Only for non-premium app users */}
+      {showPremiumBanner && (
+        <motion.div 
+          variants={itemVariants}
+          className="bg-gradient-to-r from-accent-red/20 via-accent-red/10 to-transparent border border-accent-red/30 rounded-xl p-6"
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="bg-accent-red/20 p-3 rounded-full">
+                <Crown className="w-8 h-8 text-accent-red" />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-xl">Unlock Full Hymn Book</h3>
+                <p className="text-slate-300 text-sm">Get access to all 678 hymns in English & Bemba</p>
+              </div>
+            </div>
+            <Link
+              to="/checkout?product=Hymn+Book&price=50&currency=ZMW&source=app"
+              className="bg-accent-red hover:bg-accent-red/90 text-white font-bold px-6 py-3 rounded-lg transition-all flex items-center gap-2 shadow-lg hover:shadow-accent-red/30 whitespace-nowrap"
+            >
+              <Crown className="w-5 h-5" />
+              Unlock Now (K50)
+            </Link>
+          </div>
+          <div className="mt-4 text-xs text-slate-400 text-center md:text-left">
+            One-time payment • Lifetime access • All 678 hymns • English & Bemba
+          </div>
+        </motion.div>
       )}
 
       {/* Featured Announcement Carousel */}

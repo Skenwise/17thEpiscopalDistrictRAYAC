@@ -55,14 +55,21 @@ export default function CheckoutPage() {
     setIsLoading(true);
     setStep('processing');
 
-    try {
-      // use environment variable if available, otherwise fall back to hard-coded URL
-      const url = import.meta.env.VITE_CREATE_CHECKOUT_URL ||
-        'https://createcheckout-jjsbakbwia-uc.a.run.app';
+        try {
+      // 1. Point to your new DigitalOcean droplet
+      const url = import.meta.env.VITE_CREATE_CHECKOUT_URL || 
+        'https://api.17thdistrictrayac.org/rayac/payments/checkout';
+
+      // 2. Get the user's auth token (adjust this based on how your app stores it, e.g., localStorage, Zustand, Redux)
+      const userToken = localStorage.getItem('userToken') || 'YOUR_TEST_TOKEN_HERE'; 
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-project-id': 'rayac', // ⚠️ REQUIRED by web-app-gateway
+          'Authorization': `Bearer ${userToken}` // ⚠️ REQUIRED by web-app-gateway
+        },
         body: JSON.stringify({
           email,
           phone: cleanPhone,
@@ -71,7 +78,7 @@ export default function CheckoutPage() {
           productName,
           paymentMethod,
         }),
-      });
+      }); 
 
       const data = await response.json();
       if (data.checkout_url) {

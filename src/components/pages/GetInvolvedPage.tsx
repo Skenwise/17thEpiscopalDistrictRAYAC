@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { UserPlus, HandHeart, Mail, Phone, User, MessageSquare, CheckCircle } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -17,17 +19,35 @@ export default function GetInvolvedPage() {
     interest: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitted(true);
-    setFormData({ name: '', email: '', phone: '', interest: '', message: '' });
-    setTimeout(() => setIsSubmitted(false), 5000);
-  };
+  const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      await addDoc(collection(db, 'contact_submissions'), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        status: 'new'
+      });
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', interest: '', message: '' });
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (err) {
+      console.error('Failed to submit:', err);
+      setError('Failed to submit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const youngAdultBenefits = [
@@ -238,6 +258,11 @@ export default function GetInvolvedPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-2xl border border-accent-red/20">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <p className="text-red-600 text-sm">{error}</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <Label htmlFor="name" className="font-paragraph text-base text-gray-800 mb-2 flex items-center gap-2">
@@ -251,7 +276,7 @@ export default function GetInvolvedPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="font-paragraph"
+                      className="font-paragraph text-gray-900 bg-white border-gray-300 focus:border-accent-red"
                       placeholder="John Doe"
                     />
                   </div>
@@ -268,7 +293,7 @@ export default function GetInvolvedPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="font-paragraph"
+                      className="font-paragraph text-gray-900 bg-white border-gray-300 focus:border-accent-red"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -286,7 +311,7 @@ export default function GetInvolvedPage() {
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="font-paragraph"
+                      className="font-paragraph text-gray-900 bg-white border-gray-300 focus:border-accent-red"
                       placeholder="+260 XXX XXX XXX"
                     />
                   </div>
@@ -302,7 +327,7 @@ export default function GetInvolvedPage() {
                       required
                       value={formData.interest}
                       onChange={handleChange}
-                      className="font-paragraph"
+                      className="font-paragraph text-gray-900 bg-white border-gray-300 focus:border-accent-red"
                       placeholder="e.g., Membership, Partnership, Volunteering"
                     />
                   </div>
@@ -319,17 +344,18 @@ export default function GetInvolvedPage() {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="font-paragraph min-h-[150px]"
+                    className="font-paragraph min-h-[150px] text-gray-900 bg-white border-gray-300 focus:border-accent-red"
                     placeholder="Tell us more about your interest in RAYAC..."
                   />
                 </div>
 
                 <Button
                   type="submit"
+                  disabled={isSubmitting}
                   size="lg"
-                  className="w-full bg-accent-red hover:bg-accent-red/90 text-white font-paragraph font-semibold text-lg py-6 rounded-lg transition-all duration-300"
+                  className="w-full bg-accent-red hover:bg-accent-red/90 disabled:opacity-60 text-white font-paragraph font-semibold text-lg py-6 rounded-lg transition-all duration-300"
                 >
-                  Submit
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>
               </form>
             )}

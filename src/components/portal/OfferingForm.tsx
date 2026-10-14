@@ -56,12 +56,20 @@ export default function OfferingForm({ onSuccess, fund = 'General Fund' }: Offer
     setStep('processing');
 
     try {
-      const url = import.meta.env.VITE_CREATE_CHECKOUT_URL ||
-        'https://create-checkout-jjsbakbwia-uc.a.run.app';
+      // 1. Point to your new DigitalOcean droplet
+      const url = import.meta.env.VITE_CREATE_CHECKOUT_URL || 
+        'https://api.17thdistrictrayac.org/rayac/payments/checkout';
+
+      // 2. Get the Firebase ID token securely from the current logged-in user
+      const token = user ? await user.getIdToken() : 'YOUR_TEST_TOKEN_HERE';
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-project-id': 'rayac', // ⚠️ REQUIRED by web-app-gateway
+          'Authorization': `Bearer ${token}` // ⚠️ REQUIRED by web-app-gateway
+        },
         body: JSON.stringify({
           email,
           phone: cleanPhone,

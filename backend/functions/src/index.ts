@@ -6,7 +6,9 @@ import {v4 as uuidv4} from "uuid";
 initializeApp();
 const db = getFirestore();
 
-const GEEPAY_BASE_URL = "https://pgsandbox.privatedns.org/v1";
+// CORRECTED: Using the correct production API base URL
+const GEEPAY_BASE_URL = "https://gateway.mygeepay.com";
+
 const HYMN_PRICE = 50;
 
 interface PaymentData {
@@ -16,19 +18,21 @@ interface PaymentData {
   amount: number;
   productName: string | null;
   productType?: string;
+  applicationId?: string | null;
   paymentMethod: string | null;
   status: string;
   createdAt: Date;
 }
 
+// FIXED: Correct OAuth token request format
 async function getAccessToken(): Promise<string> {
   const response = await fetch(`${GEEPAY_BASE_URL}/oauth/token`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json",
     },
-    body: JSON.stringify({
+    body: new URLSearchParams({
       grant_type: "client_credentials",
       client_id: process.env.GEEPAY_CLIENT_ID!,
       client_secret: process.env.GEEPAY_CLIENT_SECRET!,
@@ -53,7 +57,7 @@ export const createCheckout = onRequest(
       return;
     }
 
-    const {email, phone, name, amount, productName, paymentMethod} = req.body;
+    const {email, phone, name, amount, productName, paymentMethod, productType, returnUrl, applicationId} = req.body;
 
     if (!email || !name) {
       res.status(400).json({error: "Missing required fields"});
@@ -65,23 +69,46 @@ export const createCheckout = onRequest(
     try {
       const token = await getAccessToken();
       const transactionRef = uuidv4();
-      let returnUrl = "https://17thdistrictrayac.org/checkout?payment=success";
-      if (productName) {
-        returnUrl += `&product=${encodeURIComponent(productName)}`;
+
+      // Determine return URL based on productType or returnUrl param
+      let finalReturnUrl = returnUrl;
+      if (!finalReturnUrl) {
+        if (productType === "marriage") {
+          finalReturnUrl = "https://unionhub-98e64.web.app/checkout?payment=success";
+        } else {
+          finalReturnUrl = "https://17thdistrictrayac.org/checkout?payment=success";
+        }
       }
 
+      if (productName) {
+        finalReturnUrl += `&product=${encodeURIComponent(productName)}&ref=${transactionRef}`;
+      }
+
+      // Extract application ID from productName if not provided
+      let extractedAppId = applicationId;
+      if (!extractedAppId && productType === "marriage" && productName) {
+        const match = productName.match(/[a-f0-9-]{36}/);
+        if (match) {
+          extractedAppId = match[0];
+        }
+      }
+
+      // Store payment with productType to identify which project
       await db.collection("payments").doc(transactionRef).set({
         email,
         phone: phone || null,
         name,
         amount: chargeAmount,
         productName: productName || null,
+        productType: productType || "hymn",
+        applicationId: extractedAppId || null,
         paymentMethod: paymentMethod || null,
         status: "pending",
         createdAt: new Date(),
       } as PaymentData);
 
-      const response = await fetch(`${GEEPAY_BASE_URL}/checkout/session`, {
+      // Checkout session endpoint
+      const response = await fetch(`${GEEPAY_BASE_URL}/api/v1/checkout/session`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -97,7 +124,7 @@ export const createCheckout = onRequest(
             name: name,
             email: email,
           },
-          return_url: returnUrl,
+          return_url: finalReturnUrl,
           receipt_redirect: true,
         }),
       });
@@ -106,7 +133,7 @@ export const createCheckout = onRequest(
       console.log("GeePay checkout response:", JSON.stringify(data));
 
       if (data.checkout_url) {
-        res.status(200).json({checkout_url: data.checkout_url});
+        res.status(200).json({checkout_url: data.checkout_url, transactionRef});
       } else {
         throw new Error(data.message || "No checkout URL returned");
       }
@@ -148,7 +175,14 @@ export const geepayWebhook = onRequest(
         return;
       }
 
-      const payment = paymentDoc.data() as PaymentData;
+      const payment = paymentDoc.data();
+
+      // Fix: Check if payment is undefined
+      if (!payment) {
+        console.error("Payment data is undefined for transaction:", transactionRef);
+        res.status(404).send("Payment data not found");
+        return;
+      }
 
       if (status === "successful") {
         await paymentRef.update({
@@ -157,26 +191,37 @@ export const geepayWebhook = onRequest(
           completedAt: new Date(),
         });
 
-        console.log(
-          `Payment succeeded for ${payment.email}` +
-          (payment.productName ? ` (product: ${payment.productName})` : "")
-        );
+        console.log(`Payment succeeded for ${payment.email} (${payment.productType})`);
 
-        const usersSnapshot = await db
-          .collection("users")
-          .where("email", "==", payment.email)
-          .limit(1)
-          .get();
+        // Handle based on productType
+        if (payment.productType === "marriage") {
+          // Use the stored applicationId
+          const appId = payment.applicationId || transactionRef;
 
-        if (!usersSnapshot.empty) {
-          const userDoc = usersSnapshot.docs[0];
-          const productName = payment.productName || "";
-          const isHymnBookPurchase =
-            productName.toLowerCase().includes("hymn") ||
-            productName.toLowerCase().includes("hymn book") ||
-            productName === "Hymn Book";
+          // Call UnionHub API to update payment status
+          await fetch("https://api.unionhubbykabert.com/api/webhooks/geepay", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+              transactionRef,
+              status: "success",
+              email: payment.email,
+              amount: payment.amount,
+              applicationId: appId,
+            }),
+          });
 
-          if (isHymnBookPurchase) {
+          console.log(`✅ Marriage payment processed for: ${payment.email} (Application: ${appId})`);
+        } else {
+          // Handle hymn book purchase (Rayac)
+          const usersSnapshot = await db
+            .collection("users")
+            .where("email", "==", payment.email)
+            .limit(1)
+            .get();
+
+          if (!usersSnapshot.empty) {
+            const userDoc = usersSnapshot.docs[0];
             await userDoc.ref.update({
               premiumUnlocked: true,
               paymentDate: new Date(),
@@ -184,19 +229,13 @@ export const geepayWebhook = onRequest(
             });
             console.log(`✅ Premium unlocked for: ${payment.email} (Hymn Book purchase)`);
           } else {
-            await userDoc.ref.update({
-              paymentDate: new Date(),
-              paymentRef: transactionRef,
+            await db.collection("pendingUnlocks").doc(payment.email).set({
+              email: payment.email,
+              transactionRef,
+              unlockedAt: new Date(),
             });
-            console.log(`❌ Premium NOT unlocked for: ${payment.email} (${productName || "offering/event"})`);
+            console.log(`Pending unlock stored for: ${payment.email}`);
           }
-        } else {
-          await db.collection("pendingUnlocks").doc(payment.email).set({
-            email: payment.email,
-            transactionRef,
-            unlockedAt: new Date(),
-          });
-          console.log(`Pending unlock stored for: ${payment.email}`);
         }
       } else {
         await paymentRef.update({
