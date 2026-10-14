@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { returnToApp } from '@/lib/appHandoff';
 import { motion } from 'framer-motion';
 import { BookOpen, Mail, Lock } from 'lucide-react';
 import Header from '@/components/Header';
@@ -34,12 +35,9 @@ export default function SignInPage() {
       return;
     }
     
-    const isAndroid = /android/i.test(navigator.userAgent);
-    if (isAndroid) {
-      window.location.href = 'intent://auth-callback#Intent;scheme=rayac-hymn;package=app.rork.ame_church_hymn_book;end';
-    } else {
-      window.location.href = 'rayac-hymn://auth-callback';
-    }
+    // Jump back to the native app with a one-time token so the app can
+    // identify the user (premium sync + device registration).
+    void returnToApp();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

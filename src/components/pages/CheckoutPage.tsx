@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Crown, Check, ArrowRight, Smartphone } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { auth } from '@/lib/firebase';
+import { returnToApp } from '@/lib/appHandoff';
 
 const DEFAULT_PRICE = 50;
 
@@ -21,12 +23,8 @@ export default function CheckoutPage() {
   const currency = getQueryValue(searchParams, 'currency', 'ZMW');
   const price = parseFloat(getQueryValue(searchParams, 'price', DEFAULT_PRICE.toString())) || DEFAULT_PRICE;
   const paymentStatus = searchParams.get('payment');
-
-  useEffect(() => {
-    if (paymentStatus === 'success') {
-      setStep('done');
-    }
-  }, [paymentStatus]);
+  const source = searchParams.get('source');
+  const [returningToApp, setReturningToApp] = useState(false);
 
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -35,6 +33,22 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [step, setStep] = useState<'form' | 'processing' | 'done'>('form');
+
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      setStep('done');
+      // Came from the mobile app: hand the user back with a one-time token.
+      if (source === 'app' && !returningToApp) {
+        setReturningToApp(true);
+        if (!auth.currentUser) {
+          // Paid without an account: they need one to activate in the app.
+          navigate('/sign-in?source=app');
+          return;
+        }
+        void returnToApp();
+      }
+    }
+  }, [paymentStatus, source, navigate, returningToApp]);
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +84,7 @@ export default function CheckoutPage() {
           amount: price,
           productName,
           paymentMethod,
+          source,
         }),
       });
 
@@ -180,13 +195,15 @@ export default function CheckoutPage() {
               <div className="text-center py-16">
                 <h2 className="font-heading text-3xl text-green-400 mb-4">Thank you!</h2>
                 <p className="text-white/80 mb-6">
-                  Your payment was successful. You will be redirected back to the app shortly or you may close this window.
+                  {source === 'app'
+                    ? 'Payment received! Taking you back to the AME Hymn Book app to activate your hymns…'
+                    : 'Your payment was successful. Your hymns are now unlocked in your account.'}
                 </p>
                 <button
                   className="bg-accent-red hover:bg-accent-red/90 text-white px-8 py-3 rounded-full"
                   onClick={() => window.location.reload()}
                 >
-                  Reload
+                  Didn't open the app? Try again
                 </button>
               </div>
             ) : step === 'processing' ? (
