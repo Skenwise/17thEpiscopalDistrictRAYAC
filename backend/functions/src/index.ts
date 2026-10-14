@@ -1,10 +1,41 @@
 import {initializeApp} from "firebase-admin/app";
+import {getAuth} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
-import {onRequest} from "firebase-functions/v2/https";
+import {onCall, onRequest, HttpsError} from "firebase-functions/v2/https";
 import {v4 as uuidv4} from "uuid";
 
 initializeApp();
 const db = getFirestore();
+
+// Callable: mints a Firebase custom token so the mobile app can sign the
+// user in after the website sends them back via deep link (auth-callback).
+// Requires the caller to be signed in on the website. Also applies any
+// pending unlock (user paid before an account existed) server-side.
+export const createAppToken = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Sign in required to create an app token.");
+  }
+  const uid = request.auth.uid;
+  const email = request.auth.token.email as string | undefined;
+
+  if (email) {
+    const pendingRef = db.collection("pendingUnlocks").doc(email);
+    const pending = await pendingRef.get();
+    if (pending.exists) {
+      const data = pending.data();
+      await db.collection("users").doc(uid).set({
+        email,
+        premiumUnlocked: true,
+        paymentDate: data?.unlockedAt ?? null,
+        paymentRef: data?.transactionRef ?? null,
+      }, {merge: true});
+      await pendingRef.delete();
+    }
+  }
+
+  const token = await getAuth().createCustomToken(uid, {src: "web_handoff"});
+  return {token};
+});
 
 const GEEPAY_BASE_URL = "https://pgsandbox.privatedns.org/v1";
 const HYMN_PRICE = 50;
@@ -53,7 +84,7 @@ export const createCheckout = onRequest(
       return;
     }
 
-    const {email, phone, name, amount, productName, paymentMethod} = req.body;
+    const {email, phone, name, amount, productName, paymentMethod, source} = req.body;
 
     if (!email || !name) {
       res.status(400).json({error: "Missing required fields"});
@@ -68,6 +99,9 @@ export const createCheckout = onRequest(
       let returnUrl = "https://17thdistrictrayac.org/checkout?payment=success";
       if (productName) {
         returnUrl += `&product=${encodeURIComponent(productName)}`;
+      }
+      if (source) {
+        returnUrl += `&source=${encodeURIComponent(source)}`;
       }
 
       await db.collection("payments").doc(transactionRef).set({
