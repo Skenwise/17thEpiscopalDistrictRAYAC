@@ -9,12 +9,31 @@ const db = getFirestore();
 
 // Callable: mints a Firebase custom token so the mobile app can sign the
 // user in after the website sends them back via deep link (auth-callback).
-// Requires the caller to be signed in on the website.
+// Requires the caller to be signed in on the website. Also applies any
+// pending unlock (user paid before an account existed) server-side.
 export const createAppToken = onCall(async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Sign in required to create an app token.");
   }
-  const token = await getAuth().createCustomToken(request.auth.uid, {src: "web_handoff"});
+  const uid = request.auth.uid;
+  const email = request.auth.token.email as string | undefined;
+
+  if (email) {
+    const pendingRef = db.collection("pendingUnlocks").doc(email);
+    const pending = await pendingRef.get();
+    if (pending.exists) {
+      const data = pending.data();
+      await db.collection("users").doc(uid).set({
+        email,
+        premiumUnlocked: true,
+        paymentDate: data?.unlockedAt ?? null,
+        paymentRef: data?.transactionRef ?? null,
+      }, {merge: true});
+      await pendingRef.delete();
+    }
+  }
+
+  const token = await getAuth().createCustomToken(uid, {src: "web_handoff"});
   return {token};
 });
 

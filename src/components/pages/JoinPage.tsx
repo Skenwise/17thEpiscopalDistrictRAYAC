@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { fetchAppToken } from '@/lib/appHandoff';
 import { motion } from 'framer-motion';
 import { BookOpen, User, Mail, Lock, Phone, MapPin, Church, Users, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
@@ -67,18 +68,9 @@ export default function JoinPage() {
       const { user } = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       await updateProfile(user, { displayName: formData.fullName });
 
-      // Check if they paid before signing up
-      let premiumUnlocked = false;
-      try {
-        const pendingRef = doc(db, 'pendingUnlocks', formData.email);
-        const pendingDoc = await getDoc(pendingRef);
-        if (pendingDoc.exists()) {
-          premiumUnlocked = true;
-          await deleteDoc(pendingRef);
-        }
-      } catch (_) {}
-
-      // Save member profile to Firestore
+      // Premium always starts false on client creates. If they paid before
+      // joining, the createAppToken Cloud Function applies that pending
+      // unlock server-side (clients cannot read pendingUnlocks).
       await setDoc(doc(db, 'users', user.uid), {
         email: formData.email,
         displayName: formData.fullName,
@@ -87,10 +79,13 @@ export default function JoinPage() {
         conference: formData.conference,
         district: formData.district,
         localChurch: formData.localChurch,
-        premiumUnlocked,
+        premiumUnlocked: false,
         createdAt: new Date(),
         memberSince: new Date().getFullYear(),
       });
+
+      // Fire-and-forget: applies any pending unlock for this email.
+      void fetchAppToken();
 
       setSuccess(true);
 
