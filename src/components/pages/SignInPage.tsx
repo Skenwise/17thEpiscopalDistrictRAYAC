@@ -21,16 +21,27 @@ export default function SignInPage() {
            window.location.href.includes('exp://');
   };
 
+  // Check if running as PWA (installed on home screen)
+  const isPWA = () => {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           (window.navigator as any).standalone ||
+           document.referrer.includes('/app/');
+  };
+
   const redirectToApp = () => {
+    // If PWA, redirect back to the PWA app instead of deep link
+    if (isPWA()) {
+      window.location.href = '/app/';
+      return;
+    }
+
     // For Expo Go, just show message and let user manually return
     if (isExpoGo()) {
-      // Show a visible message on the page
       const msg = document.createElement('div');
       msg.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50 text-center';
       msg.innerHTML = '✅ Sign in successful!<br/>Please manually switch back to the AME Church Hymn Book app.';
       document.body.appendChild(msg);
       setTimeout(() => msg.remove(), 5000);
-      // Don't redirect, stay on page
       return;
     }
     
@@ -71,7 +82,11 @@ export default function SignInPage() {
           redirectToApp();
         } else {
           await updateDoc(userDocRef, { appLoginAttempts: loginAttempts + 1 });
-          navigate('/checkout?product=Hymn+Book&price=50&currency=ZMW&source=app');
+          if (isPWA()) {
+            navigate('/checkout?product=Hymn+Book&price=50&currency=ZMW&source=pwa');
+          } else {
+            navigate('/checkout?product=Hymn+Book&price=50&currency=ZMW&source=app');
+          }
         }
       } else if (redirect) {
         navigate(redirect);

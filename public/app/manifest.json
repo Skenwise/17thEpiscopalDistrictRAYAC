@@ -1,0 +1,22 @@
+{
+  "name": "AME Church Hymn Book",
+  "short_name": "AME Hymns",
+  "description": "African Methodist Episcopal Church Hymn Book - English & Bemba",
+  "start_url": "/app/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#E31B23",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/app/assets/images/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/app/assets/images/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
